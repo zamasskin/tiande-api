@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MarketingCampaignParamsDto } from './dto/marketing-campaign-params.dto';
 import { Knex } from 'knex';
+import { plainToClass } from 'class-transformer';
+import { MarketingCampaignGroupModel } from './models/marketing-campaign-group.model';
 
 @Injectable()
 export class MarketingCampaignService {
@@ -31,19 +33,25 @@ export class MarketingCampaignService {
   }
 
   // Получаем ид групп
-  findGroupId(userId: number): Promise<number[]> {
-    return userId
-      ? this.findGroupIdByUser(userId)
-      : this.findGroupIdByGuestId();
+  async findGroupId(userId: number): Promise<number[]> {
+    const groupId = (await userId)
+      ? this.findGroupByUser(userId)
+      : this.findGroupByGuest();
+    return [1];
   }
 
   // Отдаем группы для не зарегистрированного пользователя
-  async findGroupIdByGuestId() {
-    return (await this.groupQuery()).map(this.mapGroup);
+  async findGroupByGuest(): Promise<MarketingCampaignGroupModel[]> {
+    return plainToClass<MarketingCampaignGroupModel, Object[]>(
+      MarketingCampaignGroupModel,
+      await this.groupQuery(),
+    );
   }
 
   // Отдаем группы для зарегистрированного пользователя с доп проверками
-  async findGroupIdByUser(userId: number): Promise<number[]> {
+  async findGroupByUser(
+    userId: number,
+  ): Promise<MarketingCampaignGroupModel[]> {
     const dateRegister = await this.findDateRegister(userId);
     const queryBuilder = this.groupQuery();
     const groups = await queryBuilder
@@ -57,7 +65,10 @@ export class MarketingCampaignService {
           .whereNull('g.UF_REGISTER_END')
           .orWhere('g.UF_REGISTER_END', '>=', dateRegister),
       );
-    return groups.map(this.mapGroup);
+    return plainToClass<MarketingCampaignGroupModel, Object[]>(
+      MarketingCampaignGroupModel,
+      groups,
+    );
   }
 
   // Получаем дату регистрации пользователя
