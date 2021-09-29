@@ -12,7 +12,10 @@ export class MarketingCampaignService {
     this.qb = configService.get('knex');
   }
   async findList(parameters: MarketingCampaignParamsDto) {
-    const groupsId = await this.findGroupId(Number(parameters.userId));
+    const groupsId = await this.findGroupId(
+      Number(parameters.guestId),
+      Number(parameters.userId),
+    );
     return {
       id: 10,
     };
@@ -32,12 +35,30 @@ export class MarketingCampaignService {
       .where('g.UF_ACTIVE', 1);
   }
 
-  // Получаем ид групп
-  async findGroupId(userId: number): Promise<number[]> {
-    const groupId = (await userId)
-      ? this.findGroupByUser(userId)
-      : this.findGroupByGuest();
-    return [1];
+  // Получаем доступные ид групп
+  async findGroupId(guestId: number, userId: number): Promise<number[]> {
+    const groups = await this.findGroup(userId);
+    if (groups.length === 0) {
+      return [];
+    }
+    const [basketGroups, orderGroups] = await Promise.all([
+      this.findBasketMarketingCampaignId(guestId),
+      this.findBasketOrderByMarketingCampaignId(
+        userId,
+        groups.map((group) => group.id),
+      ),
+    ]);
+    return groups
+      .filter(
+        (group) =>
+          !(basketGroups.includes(group.id) || orderGroups.includes(group.id)),
+      )
+      .map((group) => group.id);
+  }
+
+  // Получаем список групп
+  async findGroup(userId: number): Promise<MarketingCampaignGroupModel[]> {
+    return userId ? this.findGroupByUser(userId) : this.findGroupByGuest();
   }
 
   // Отдаем группы для не зарегистрированного пользователя
@@ -81,7 +102,7 @@ export class MarketingCampaignService {
   }
 
   // Запросим из корзины товары которые являются акциями
-  async findBasketFromMarketingCampaignId(guestId: number): Promise<number[]> {
+  async findBasketMarketingCampaignId(guestId: number): Promise<number[]> {
     const basketList = await this.qb('b_sale_basket')
       .where('FUSER_ID', guestId)
       .whereNull('ORDER_ID')
