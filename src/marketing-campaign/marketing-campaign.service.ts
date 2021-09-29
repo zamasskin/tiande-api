@@ -90,4 +90,20 @@ export class MarketingCampaignService {
       .select('MARKETING_CAMPAIGN_ID as marketingCampaignId');
     return basketList.map((basket) => Number(basket.marketingCampaignId));
   }
+
+  // Ищем в неотмененных заказах акции не
+  // разрешенные к повторному использованию
+  async findBasketOrderByMarketingCampaignId(
+    userId: number,
+    marketingCampaignId: number[],
+  ): Promise<number[]> {
+    const groups = await this.qb({ o: 'b_sale_order' })
+      .leftJoin({ b: 'b_sale_basket' }, 'b.ORDER_ID', 'o.ID')
+      .where('o.USER_ID', userId)
+      .where('o.CANCELED', 'N')
+      .whereIn('b.MARKETING_CAMPAIGN_ID', marketingCampaignId)
+      .groupBy('b.MARKETING_CAMPAIGN_ID')
+      .select('b.MARKETING_CAMPAIGN_ID as marketingCampaignId');
+    return groups.map((group) => Number(group.marketingCampaignId));
+  }
 }
