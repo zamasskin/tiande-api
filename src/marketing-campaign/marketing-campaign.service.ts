@@ -118,6 +118,9 @@ export class MarketingCampaignService {
     userId: number,
     marketingCampaignId: number[],
   ): Promise<number[]> {
+    if (!userId || marketingCampaignId.length === 0) {
+      return [];
+    }
     const groups = await this.qb({ o: 'b_sale_order' })
       .leftJoin({ b: 'b_sale_basket' }, 'b.ORDER_ID', 'o.ID')
       .where('o.USER_ID', userId)
