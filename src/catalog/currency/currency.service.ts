@@ -12,6 +12,14 @@ export class CurrencyService {
     this.qb = configService.get('knex');
   }
 
+  async findCurrencyByCountry(countryId: string): Promise<string> {
+    const result = await this.qb('bit_country')
+      .where('ID', countryId)
+      .select('UF_CURRENCY as currency')
+      .first();
+    return result.currency || 'RUB';
+  }
+
   async fundConverter(lang: string, currency: string) {
     const model = await this.findModel(lang, currency);
     return {
