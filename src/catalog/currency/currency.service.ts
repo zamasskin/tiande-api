@@ -12,7 +12,7 @@ export class CurrencyService {
     this.qb = configService.get('knex');
   }
 
-  async findCurrencyByCountry(countryId: string): Promise<string> {
+  async findCurrencyByCountry(countryId: number): Promise<string> {
     const result = await this.qb('bit_country')
       .where('ID', countryId)
       .select('UF_CURRENCY as currency')
