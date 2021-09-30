@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import configuration from 'src/config/configuration';
 import { PriceService } from './price/price.service';
+import { CurrencyService } from './currency/currency.service';
 
 @Module({
   imports: [
@@ -9,7 +10,7 @@ import { PriceService } from './price/price.service';
       load: [configuration],
     }),
   ],
-  providers: [PriceService],
-  exports: [PriceService],
+  providers: [PriceService, CurrencyService],
+  exports: [PriceService, CurrencyService],
 })
 export class CatalogModule {}
