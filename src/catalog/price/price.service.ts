@@ -1,17 +1,78 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { plainToClass } from 'class-transformer';
 import { Knex } from 'knex';
-import { PriceModel } from './models/price.model';
 import * as _ from 'lodash';
+import { CurrencyService } from '../currency/currency.service';
 
 type priceType = 'catalog' | 'bal' | 'loyalty';
 
 @Injectable()
 export class PriceService {
   qb: Knex;
-  constructor(configService: ConfigService) {
+  constructor(
+    configService: ConfigService,
+    private currencyService: CurrencyService,
+  ) {
     this.qb = configService.get('knex');
+  }
+
+  // получение форматированных цен
+  async findPriceFormatByProductsId(
+    productId: number[],
+    countryId: number,
+    lang: string,
+  ) {
+    return this.findPriceFormatByProductsIdAndCurrency(
+      productId,
+      countryId,
+      lang,
+      await this.currencyService.findCurrencyByCountry(countryId),
+    );
+  }
+
+  // получение форматированных цен балл
+  findPriceBalFormatByProductsId(
+    productId: number[],
+    countryId: number,
+    lang: string,
+  ) {
+    return this.findPriceFormatByProductsIdAndCurrency(
+      productId,
+      countryId,
+      lang,
+      'BAL',
+    );
+  }
+
+  // получение форматированных цен по программе лояльности
+  findPriceLoyaltyFormatByProductsId(
+    productId: number[],
+    countryId: number,
+    lang: string,
+  ) {
+    return this.findPriceFormatByProductsIdAndCurrency(
+      productId,
+      countryId,
+      lang,
+      'FON',
+    );
+  }
+
+  // получение форматированных цен по ид товаров и валюте
+  async findPriceFormatByProductsIdAndCurrency(
+    productId: number[],
+    countryId: number,
+    lang: string,
+    currency: string,
+  ) {
+    const [prices, converter] = await Promise.all([
+      this.findPriceByProductsId(productId, countryId),
+      this.currencyService.fundConverter(lang, currency),
+    ]);
+    return prices.map((p) => ({
+      ...p,
+      priceFormat: converter.format(p.price),
+    }));
   }
 
   // получение цен
