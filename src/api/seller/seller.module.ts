@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { MarketingCampaignModule } from 'stocks/marketing-campaign/marketing-campaign.module';
+import { MarketingCampaignModule } from 'src/marketing-campaign/marketing-campaign.module';
 import { DiscountController } from './discount.controller';
 import { SellerGuard } from './seller.guard';
 
