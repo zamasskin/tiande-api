@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { plainToClass } from 'class-transformer';
 import { Knex } from 'knex';
 import _ from 'lodash';
-import { CurrencyLangModel } from './model/currency-lang.model';
+import { CurrencyLangModel } from './models/currency-lang.model';
 
 @Injectable()
 export class CurrencyService {
