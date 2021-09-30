@@ -6,7 +6,7 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { MarketingCampaignService } from 'src/marketing-campaign/marketing-campaign.service';
+import { MarketingCampaignService } from 'stocks/marketing-campaign/marketing-campaign.service';
 import { GetMarketingCampaignDto } from './dto/marketing_campaign.dto';
 import { MarketingCampaign } from './entities/marketing_campaign.entity';
 import { SellerGuard } from './seller.guard';

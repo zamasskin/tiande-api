@@ -3,7 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ApiModule } from './api/api.module';
-import { MarketingCampaignModule } from './marketing-campaign/marketing-campaign.module';
+import { MarketingCampaignModule } from '../stocks/marketing-campaign/marketing-campaign.module';
 import configuration from './config/configuration';
 
 @Module({

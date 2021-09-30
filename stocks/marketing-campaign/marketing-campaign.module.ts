@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MarketingCampaignService } from './marketing-campaign.service';
-import configuration from '../config/configuration';
+import configuration from '../../src/config/configuration';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
