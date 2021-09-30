@@ -4,6 +4,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ApiModule } from './api/api.module';
 import { MarketingCampaignModule } from '../stocks/marketing-campaign/marketing-campaign.module';
+import { CatalogModule } from './catalog/catalog.module';
 import configuration from './config/configuration';
 
 @Module({
@@ -13,6 +14,7 @@ import configuration from './config/configuration';
     ConfigModule.forRoot({
       load: [configuration],
     }),
+    CatalogModule,
   ],
   controllers: [AppController],
   providers: [AppService],
