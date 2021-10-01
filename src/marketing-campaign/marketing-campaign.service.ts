@@ -10,6 +10,7 @@ import { MessageService } from '../catalog/message/message.service';
 import { LangService } from '../configurations/lang/lang.service';
 import * as _ from 'lodash';
 import { ElementModel } from '../iblock/element/models/element.model';
+import { MarketingCampaignModel } from './models/marketing-campaign.model';
 
 @Injectable()
 export class MarketingCampaignService {
@@ -31,6 +32,29 @@ export class MarketingCampaignService {
     return {
       id: 10,
     };
+  }
+
+  async findItemsByGroupId(
+    groupsId: number[],
+    dto: MarketingCampaignParamsDto,
+  ): Promise<MarketingCampaignModel[]> {
+    const lang = await this.langService.findById(dto.langId);
+    const query = this.qb({ mc: 'b_marketing_campaign' })
+      .leftJoin({ c: 'b_marketing_campaign_uf_country' }, 'c.ID', 'mc.ID')
+      .leftJoin({ p: 'b_marketing_campaign_uf_product_id' }, 'p.ID', 'mc.ID')
+      .whereIn('mc.UF_GROUP_ID', groupsId)
+      .where('c.VALUE', dto.countryId)
+      .select(
+        '*',
+        `mc.UF_DESCRIPTION_${lang.code.toUpperCase()} as UF_DESCRIPTION`,
+        'p.VALUE as PRODUCT_ID',
+      )
+      .groupBy('p.VALUE');
+
+    return plainToClass<MarketingCampaignModel, Object[]>(
+      MarketingCampaignModel,
+      await query,
+    );
   }
 
   async findProducts(dto: MarketingCampaignParamsDto, productId: number[]) {
