@@ -4,11 +4,23 @@ import { MarketingCampaignParamsDto } from './dto/marketing-campaign-params.dto'
 import { Knex } from 'knex';
 import { plainToClass } from 'class-transformer';
 import { MarketingCampaignGroupModel } from './models/marketing-campaign-group.model';
+import { PriceService } from '../catalog/price/price.service';
+import { ElementService } from '../iblock/element/element.service';
+import { MessageService } from '../catalog/message/message.service';
+import { LangService } from '../configurations/lang/lang.service';
+import * as _ from 'lodash';
+import { ElementModel } from '../iblock/element/models/element.model';
 
 @Injectable()
 export class MarketingCampaignService {
   qb: Knex;
-  constructor(configService: ConfigService) {
+  constructor(
+    configService: ConfigService,
+    private priceService: PriceService,
+    private elementService: ElementService,
+    private messageService: MessageService,
+    private langService: LangService,
+  ) {
     this.qb = configService.get('knex');
   }
   async findList(parameters: MarketingCampaignParamsDto) {
@@ -19,6 +31,40 @@ export class MarketingCampaignService {
     return {
       id: 10,
     };
+  }
+
+  async findProducts(dto: MarketingCampaignParamsDto, productId: number[]) {
+    const lang = await this.langService.findById(dto.langId);
+    const [elements, prices, pricesBal, messages] = await Promise.all([
+      this.elementService.findElementsRawById(productId),
+      this.priceService.findPriceFormatByProductsId(
+        productId,
+        dto.countryId,
+        lang.code,
+      ),
+      this.priceService.findPriceBalFormatByProductsId(
+        productId,
+        dto.countryId,
+        lang.code,
+      ),
+      this.messageService.findLangFieldsByProductId(productId, lang.id),
+    ]);
+    return productId.map((id) => {
+      const element = elements.find((e) => e.id === id) || new ElementModel();
+      const price = prices.find((p) => p.id === id);
+      const priceBal = pricesBal.find((p) => p.id === id);
+      const message = messages.find((m) => m.id === id);
+
+      return {
+        ...element,
+        price: price?.price || 0,
+        priceFormat: price?.priceFormat || '',
+        priceBal: priceBal?.price || 0,
+        priceBalFormat: priceBal?.priceFormat || '',
+        ...message,
+        id,
+      };
+    });
   }
 
   // Приводим ид группы к числу
