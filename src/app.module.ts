@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 import { ApiModule } from './api/api.module';
 import { MarketingCampaignModule } from './marketing-campaign/marketing-campaign.module';
 import { CatalogModule } from './catalog/catalog.module';
+import { IblockModule } from './iblock/iblock.module';
 import configuration from './config/configuration';
 
 @Module({
@@ -15,6 +16,7 @@ import configuration from './config/configuration';
       load: [configuration],
     }),
     CatalogModule,
+    IblockModule,
   ],
   controllers: [AppController],
   providers: [AppService],
