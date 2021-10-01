@@ -11,6 +11,7 @@ import { LangService } from '../configurations/lang/lang.service';
 import * as _ from 'lodash';
 import { ElementModel } from '../iblock/element/models/element.model';
 import { MarketingCampaignModel } from './models/marketing-campaign.model';
+import { CurrencyService } from '../catalog/currency/currency.service';
 
 @Injectable()
 export class MarketingCampaignService {
@@ -21,6 +22,7 @@ export class MarketingCampaignService {
     private elementService: ElementService,
     private messageService: MessageService,
     private langService: LangService,
+    private currencyService: CurrencyService,
   ) {
     this.qb = configService.get('knex');
   }
@@ -32,6 +34,32 @@ export class MarketingCampaignService {
     return {
       id: 10,
     };
+  }
+
+  async findItemsProductsByGroupId(
+    groupsId: number[],
+    dto: MarketingCampaignParamsDto,
+  ) {
+    const lang = await this.langService.findById(dto.langId);
+    const items = await this.findItemsByGroupId(groupsId, dto);
+    const productId = items.map((item) => item.productId);
+    const products = await this.findProducts(dto, productId);
+    const converter = await this.currencyService.findConverter(
+      lang.code,
+      await this.currencyService.findCurrencyByCountry(dto.countryId),
+    );
+    return items.map((item) => {
+      const product = products.find((p) => p.id === item.productId);
+      const discountPrice = item.calculate(product?.price || 0);
+      return {
+        ...product,
+        stockInfo: {
+          ...item,
+          price: discountPrice,
+          priceFormat: converter.format(discountPrice),
+        },
+      };
+    });
   }
 
   async findItemsByGroupId(
