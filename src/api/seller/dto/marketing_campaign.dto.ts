@@ -7,15 +7,15 @@ export class GetMarketingCampaignDto implements MarketingCampaignParamsDto {
   @IsInt()
   readonly guestId: number;
 
-  @ApiProperty()
   @IsInt()
+  @ApiProperty({ required: false, default: 0 })
   readonly userId: number = 0;
 
-  @ApiProperty()
+  @ApiProperty({ required: false, default: 134 })
   @IsInt()
   readonly countryId: number = 134;
 
-  @ApiProperty()
+  @ApiProperty({ required: false, default: 1 })
   @IsInt()
   readonly langId: number = 1;
 }
