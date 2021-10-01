@@ -27,4 +27,10 @@ export class MarketingCampaignModel {
 
   @Expose({ name: 'UF_STORIES_ID' })
   storiesId: string;
+
+  calculate(price: number) {
+    return this.discountPercent
+      ? (price * this.discount) / 100
+      : price - this.discount;
+  }
 }
