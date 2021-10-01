@@ -3,21 +3,22 @@ import { ConfigService } from '@nestjs/config';
 import { plainToClass } from 'class-transformer';
 import { Knex } from 'knex';
 import _ from 'lodash';
+import { CountryService } from 'src/configurations/country/country.service';
 import { CurrencyLangModel } from './models/currency-lang.model';
 
 @Injectable()
 export class CurrencyService {
   qb: Knex;
-  constructor(configService: ConfigService) {
+  constructor(
+    configService: ConfigService,
+    private countryService: CountryService,
+  ) {
     this.qb = configService.get('knex');
   }
 
   async findCurrencyByCountry(countryId: number): Promise<string> {
-    const result = await this.qb('bit_country')
-      .where('ID', countryId)
-      .select('UF_CURRENCY as currency')
-      .first();
-    return result.currency || 'RUB';
+    const country = await this.countryService.findById(countryId);
+    return country.currency;
   }
 
   async fundConverter(lang: string, currency: string) {
