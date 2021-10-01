@@ -67,7 +67,7 @@ export class PriceService {
   ) {
     const [prices, converter] = await Promise.all([
       this.findPriceByProductsId(productId, countryId),
-      this.currencyService.fundConverter(lang, currency),
+      this.currencyService.findConverter(lang, currency),
     ]);
     return prices.map((p) => ({
       ...p,

@@ -21,7 +21,7 @@ export class CurrencyService {
     return country.currency;
   }
 
-  async fundConverter(lang: string, currency: string) {
+  async findConverter(lang: string, currency: string) {
     const model = await this.findModel(lang, currency);
     return {
       format: (number: number) => this.format(number, model),
