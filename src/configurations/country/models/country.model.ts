@@ -7,5 +7,5 @@ export class CountryModel {
   id: number;
 
   @Expose({ name: 'UF_CURRENCY' })
-  currency: string;
+  currency = 'RUB';
 }
