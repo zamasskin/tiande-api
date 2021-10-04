@@ -40,7 +40,7 @@ export class ElementModel {
 
   @Type(() => Number)
   @Expose({ name: 'IBLOCK_SECTION_ID' })
-  sectionId: string;
+  sectionId: number;
 
   @Expose({ name: 'XML_ID' })
   xmlId: string;
