@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { plainToClass } from 'class-transformer';
 import { Knex } from 'knex';
+import { SiteService } from 'src/configurations/site/site.service';
 import { SectionService } from '../section/section.service';
 import { ElementModel } from './models/element.model';
 
@@ -11,6 +12,7 @@ export class ElementService {
   constructor(
     configService: ConfigService,
     private sectionService: SectionService,
+    private siteService: SiteService,
   ) {
     this.qb = configService.get('knex');
   }
@@ -47,5 +49,10 @@ export class ElementService {
 
   async findIdPathsById() {
     return (id: number) => id;
+  }
+
+  async findSiteDirPaths() {
+    const path = await this.siteService.findSiteDir();
+    return () => path;
   }
 }
