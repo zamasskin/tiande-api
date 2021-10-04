@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { plainToClass } from 'class-transformer';
 import { Knex } from 'knex';
+import _ from 'lodash';
 import { SiteService } from 'src/configurations/site/site.service';
 import { SectionService } from '../section/section.service';
 import { ElementModel } from './models/element.model';
@@ -63,5 +64,13 @@ export class ElementService {
       '#ID#': this.findIdPathsById(),
       '#CODE#': this.findCodePathsById(id),
     };
+  }
+
+  async findTemplateById(id: number[]): Promise<string[]> {
+    const iblockTemplates = await this.qb({ e: 'b_iblock_element' })
+      .leftJoin({ ib: 'b_iblock' }, 'id.ID', 'e.IBLOCK_ID')
+      .whereIn('e.ID', id)
+      .select('ib.DETAIL_PAGE_URL as url');
+    return _.uniq(iblockTemplates.map((t) => t.url));
   }
 }
