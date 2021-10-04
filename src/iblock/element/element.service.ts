@@ -22,7 +22,7 @@ export class ElementService {
     );
   }
 
-  async findSectionCodePathsById(id: []): Promise<(number) => string> {
+  async findSectionCodePathsById(id: number[]): Promise<(number) => string> {
     const elements = await this.findElementsRawById(id);
     const sectionId = elements
       .filter((e) => e.sectionId)
@@ -34,6 +34,14 @@ export class ElementService {
     return (id: number) => {
       const path = paths.find((p) => p.id === id);
       return path?.path || '';
+    };
+  }
+
+  async asyncCodePathsById(id: number[]) {
+    const elements = await this.findElementsRawById(id);
+    return (id: number) => {
+      const element = elements.find((e) => e.id === id);
+      return element?.code || '';
     };
   }
 }
