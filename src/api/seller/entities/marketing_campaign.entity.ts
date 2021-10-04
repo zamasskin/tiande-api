@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { MarketingCampaignEntity } from 'src/marketing-campaign/entities/marketing-campaign.entity';
+import { MarketingCampaignInfo } from './marketing_campaign_info.entity';
 
 export class MarketingCampaign implements MarketingCampaignEntity {
   @ApiProperty()
@@ -52,4 +53,7 @@ export class MarketingCampaign implements MarketingCampaignEntity {
 
   @ApiProperty()
   skItemVal: string;
+
+  @ApiProperty()
+  stockInfo: MarketingCampaignInfo;
 }
