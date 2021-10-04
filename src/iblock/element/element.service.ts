@@ -37,7 +37,7 @@ export class ElementService {
     };
   }
 
-  async asyncCodePathsById(id: number[]) {
+  async findCodePathsById(id: number[]) {
     const elements = await this.findElementsRawById(id);
     return (id: number) => {
       const element = elements.find((e) => e.id === id);
