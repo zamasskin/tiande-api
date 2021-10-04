@@ -71,7 +71,7 @@ export class ElementService {
 
   async findTemplateById(id: number[]): Promise<{ id: number; url: string }[]> {
     const iblockTemplates = await this.qb({ e: 'b_iblock_element' })
-      .leftJoin({ ib: 'b_iblock' }, 'id.ID', 'e.IBLOCK_ID')
+      .leftJoin({ ib: 'b_iblock' }, 'ib.ID', 'e.IBLOCK_ID')
       .whereIn('e.ID', id)
       .select('e.ID as id', 'ib.DETAIL_PAGE_URL as url');
     return iblockTemplates.map(({ id, url }) => ({ id: Number(id), url }));
