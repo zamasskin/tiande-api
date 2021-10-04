@@ -53,6 +53,15 @@ export class ElementService {
 
   async findSiteDirPaths() {
     const path = await this.siteService.findSiteDir();
-    return () => path;
+    return (_: number) => path;
+  }
+
+  findPathBuilderConfig(id: number[]) {
+    return {
+      '#SITE_DIR#': this.findSiteDirPaths(),
+      '#SECTION_CODE_PATH#': this.findSectionCodePathsById(id),
+      '#ID#': this.findIdPathsById(),
+      '#CODE#': this.findCodePathsById(id),
+    };
   }
 }
