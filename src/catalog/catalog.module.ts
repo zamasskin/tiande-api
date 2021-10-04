@@ -15,6 +15,6 @@ import { ConfigurationsModule } from '../configurations/configurations.module';
     ConfigurationsModule,
   ],
   providers: [PriceService, CurrencyService, MessageService, ProductService],
-  exports: [PriceService, CurrencyService, MessageService],
+  exports: [PriceService, CurrencyService, MessageService, ProductService],
 })
 export class CatalogModule {}

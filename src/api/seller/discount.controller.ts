@@ -20,11 +20,11 @@ export class DiscountController {
 
   @Post()
   @ApiOperation({ summary: 'Get marketingCampaign' })
-  @ApiOkResponse({ type: MarketingCampaign })
+  @ApiOkResponse({ type: [MarketingCampaign] })
   @ApiForbiddenResponse({ status: 403, description: 'Forbidden.' })
   async getMarketingCampaign(
     @Body() getMarketingCampaignDto: GetMarketingCampaignDto,
-  ): Promise<MarketingCampaign> {
+  ): Promise<MarketingCampaign[]> {
     return this.marketingCampaignService.findList(getMarketingCampaignDto);
   }
 }

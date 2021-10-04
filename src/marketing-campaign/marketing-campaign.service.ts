@@ -12,6 +12,8 @@ import * as _ from 'lodash';
 import { ElementModel } from '../iblock/element/models/element.model';
 import { MarketingCampaignModel } from './models/marketing-campaign.model';
 import { CurrencyService } from '../catalog/currency/currency.service';
+import { MarketingCampaignEntity } from './entities/marketing-campaign.entity';
+import { ProductService } from 'src/catalog/product/product.service';
 
 @Injectable()
 export class MarketingCampaignService {
@@ -23,23 +25,23 @@ export class MarketingCampaignService {
     private messageService: MessageService,
     private langService: LangService,
     private currencyService: CurrencyService,
+    private productService: ProductService,
   ) {
     this.qb = configService.get('knex');
   }
-  async findList(parameters: MarketingCampaignParamsDto) {
+  async findList(dto: MarketingCampaignParamsDto) {
     const groupsId = await this.findGroupId(
-      Number(parameters.guestId),
-      Number(parameters.userId),
+      Number(dto.guestId),
+      Number(dto.userId),
     );
-    return {
-      id: 10,
-    };
+    const items = await this.findItemsProductsByGroupId(groupsId, dto);
+    return items;
   }
 
   async findItemsProductsByGroupId(
     groupsId: number[],
     dto: MarketingCampaignParamsDto,
-  ) {
+  ): Promise<MarketingCampaignEntity[]> {
     const lang = await this.langService.findById(dto.langId);
     const items = await this.findItemsByGroupId(groupsId, dto);
     const productId = items.map((item) => item.productId);
@@ -48,7 +50,7 @@ export class MarketingCampaignService {
       lang.code,
       await this.currencyService.findCurrencyByCountry(dto.countryId),
     );
-    return items.map((item) => {
+    const mcItems = items.map((item) => {
       const product = products.find((p) => p.id === item.productId);
       const discountPrice = item.calculate(product?.price || 0);
       return {
@@ -59,6 +61,9 @@ export class MarketingCampaignService {
           priceFormat: converter.format(discountPrice),
         },
       };
+    });
+    return plainToClass(MarketingCampaignEntity, mcItems, {
+      excludeExtraneousValues: true,
     });
   }
 
@@ -87,33 +92,40 @@ export class MarketingCampaignService {
 
   async findProducts(dto: MarketingCampaignParamsDto, productId: number[]) {
     const lang = await this.langService.findById(dto.langId);
-    const [elements, prices, pricesBal, messages] = await Promise.all([
-      this.elementService.findElementsRawById(productId),
-      this.priceService.findPriceFormatByProductsId(
-        productId,
-        dto.countryId,
-        lang.code,
-      ),
-      this.priceService.findPriceBalFormatByProductsId(
-        productId,
-        dto.countryId,
-        lang.code,
-      ),
-      this.messageService.findLangFieldsByProductId(productId, lang.id),
-    ]);
+    const [elements, properties, prices, pricesBal, messages, elementUrls] =
+      await Promise.all([
+        this.elementService.findElementsRawById(productId),
+        this.productService.findPropertiesBuProductsId(productId),
+        this.priceService.findPriceFormatByProductsId(
+          productId,
+          dto.countryId,
+          lang.code,
+        ),
+        this.priceService.findPriceBalFormatByProductsId(
+          productId,
+          dto.countryId,
+          lang.code,
+        ),
+        this.messageService.findLangFieldsByProductId(productId, lang.id),
+        this.elementService.findUrlsById(productId),
+      ]);
     return productId.map((id) => {
       const element = elements.find((e) => e.id === id) || new ElementModel();
+      const props = properties.find((p) => p.id === id);
       const price = prices.find((p) => p.id === id);
       const priceBal = pricesBal.find((p) => p.id === id);
       const message = messages.find((m) => m.id === id);
+      const url = elementUrls.find((e) => e.id === id);
 
       return {
         ...element,
+        ...props,
         price: price?.price || 0,
         priceFormat: price?.priceFormat || '',
         priceBal: priceBal?.price || 0,
         priceBalFormat: priceBal?.priceFormat || '',
         ...message,
+        ...url,
         id,
       };
     });
@@ -127,7 +139,6 @@ export class MarketingCampaignService {
   // Запрос без доп фильтров для получения групп
   groupQuery(): Knex.QueryBuilder {
     return this.qb({ g: 'b_marketing_campaign_group' })
-      .select('g.ID as id')
       .where('g.UF_DATE_START', '<=', new Date())
       .where('g.UF_DATE_END', '>=', new Date())
       .where('g.UF_ACTIVE', 1);

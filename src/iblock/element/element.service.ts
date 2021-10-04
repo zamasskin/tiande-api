@@ -107,10 +107,7 @@ export class ElementService {
       template.keys.forEach(
         (key) => (url = url.replace(key, builders[key].build(id))),
       );
-      console.log(url);
       return { id, url };
     });
-
-    return 1;
   }
 }
