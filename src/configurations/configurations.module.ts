@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import configuration from '../config/configuration';
 import { LangService } from './lang/lang.service';
 import { CountryService } from './country/country.service';
+import { SiteService } from './site/site.service';
 
 @Module({
   imports: [
@@ -10,7 +11,7 @@ import { CountryService } from './country/country.service';
       load: [configuration],
     }),
   ],
-  providers: [LangService, CountryService],
-  exports: [LangService, CountryService],
+  providers: [LangService, CountryService, SiteService],
+  exports: [LangService, CountryService, SiteService],
 })
 export class ConfigurationsModule {}
