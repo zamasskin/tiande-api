@@ -7,6 +7,8 @@ import { SiteService } from 'src/configurations/site/site.service';
 import { SectionService } from '../section/section.service';
 import { ElementModel } from './models/element.model';
 
+type ReturnUrl = Promise<(id: number) => string>;
+
 @Injectable()
 export class ElementService {
   qb: Knex;
@@ -25,7 +27,7 @@ export class ElementService {
     );
   }
 
-  async findSectionCodePathsById(id: number[]): Promise<(number) => string> {
+  async findSectionCodePathsById(id: number[]): ReturnUrl {
     const elements = await this.findElementsRawById(id);
     const sectionId = elements
       .filter((e) => e.sectionId)
@@ -40,7 +42,7 @@ export class ElementService {
     };
   }
 
-  async findCodePathsById(id: number[]) {
+  async findCodePathsById(id: number[]): ReturnUrl {
     const elements = await this.findElementsRawById(id);
     return (id: number) => {
       const element = elements.find((e) => e.id === id);
@@ -48,13 +50,13 @@ export class ElementService {
     };
   }
 
-  async findIdPathsById() {
-    return (id: number) => id;
+  async findIdPathsById(): ReturnUrl {
+    return (id: number) => String(id);
   }
 
-  async findSiteDirPaths() {
+  async findSiteDirPaths(): ReturnUrl {
     const path = await this.siteService.findSiteDir();
-    return (_: number) => path;
+    return () => path;
   }
 
   findPathBuilderConfig(id: number[]) {
@@ -66,11 +68,11 @@ export class ElementService {
     };
   }
 
-  async findTemplateById(id: number[]): Promise<string[]> {
+  async findTemplateById(id: number[]): Promise<{ id: number; url: string }[]> {
     const iblockTemplates = await this.qb({ e: 'b_iblock_element' })
       .leftJoin({ ib: 'b_iblock' }, 'id.ID', 'e.IBLOCK_ID')
       .whereIn('e.ID', id)
-      .select('ib.DETAIL_PAGE_URL as url');
-    return _.uniq(iblockTemplates.map((t) => t.url));
+      .select('e.ID as id', 'ib.DETAIL_PAGE_URL as url');
+    return iblockTemplates.map(({ id, url }) => ({ id: Number(id), url }));
   }
 }
