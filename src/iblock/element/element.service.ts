@@ -44,4 +44,8 @@ export class ElementService {
       return element?.code || '';
     };
   }
+
+  async findIdPathsById() {
+    return (id: number) => id;
+  }
 }
