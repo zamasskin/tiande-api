@@ -37,7 +37,8 @@ export class ElementService {
     }
     const paths = await this.sectionService.findSectionCodePaths(sectionId);
     return (id: number) => {
-      const path = paths.find((p) => p.id === id);
+      const element = elements.find((e) => e.id === id);
+      const path = paths.find((p) => p.id === element.sectionId);
       return path?.path || '';
     };
   }
