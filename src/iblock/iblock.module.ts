@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import configuration from '../config/configuration';
 import { ElementService } from './element/element.service';
 import { SectionService } from './section/section.service';
+import { IblockService } from './iblock.service';
 
 @Module({
   imports: [
@@ -10,7 +11,7 @@ import { SectionService } from './section/section.service';
       load: [configuration],
     }),
   ],
-  providers: [ElementService, SectionService],
-  exports: [ElementService, SectionService],
+  providers: [IblockService, ElementService, SectionService],
+  exports: [IblockService, ElementService, SectionService],
 })
 export class IblockModule {}
