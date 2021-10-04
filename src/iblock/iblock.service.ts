@@ -11,10 +11,17 @@ export class IblockService {
     this.qb = configService.get('knex');
   }
 
-  async findById(id: string) {
+  async findById(id: number) {
     return await plainToClass(
       IBlockModel,
       await this.qb('b_iblock').where('ID', id).first(),
+    );
+  }
+
+  async findByMultipleId(id: number[]) {
+    return await plainToClass<IBlockModel, Object[]>(
+      IBlockModel,
+      await this.qb('b_iblock').whereIn('ID', id),
     );
   }
 }
