@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { plainToClass } from 'class-transformer';
 import { Knex } from 'knex';
-import _ from 'lodash';
-import { SiteService } from 'src/configurations/site/site.service';
+import * as _ from 'lodash';
+import { SiteService } from '../../configurations/site/site.service';
 import { SectionService } from '../section/section.service';
 import { ElementModel } from './models/element.model';
 
@@ -75,5 +75,42 @@ export class ElementService {
       .whereIn('e.ID', id)
       .select('e.ID as id', 'ib.DETAIL_PAGE_URL as url');
     return iblockTemplates.map(({ id, url }) => ({ id: Number(id), url }));
+  }
+
+  async findUrlsById(elementId: number[]) {
+    const iblockUrls = await this.findTemplateById(elementId);
+    const builderConf = this.findPathBuilderConfig(elementId);
+    const regExp = new RegExp(
+      Object.keys(builderConf)
+        .map((k) => `(` + k + ')')
+        .join('|'),
+      'g',
+    );
+    const templates = iblockUrls.map((t) => ({
+      ...t,
+      keys: t.url.match(regExp),
+    }));
+    const keys: string[] = _.chain(templates.map((t) => t.keys))
+      .flattenDeep()
+      .uniq()
+      .value();
+
+    const promises = keys.map(async (key) => ({
+      key,
+      build: await builderConf[key],
+    }));
+    const builders = _.keyBy(await Promise.all(promises), 'key');
+
+    return elementId.map((id) => {
+      const template = templates.find((t) => t.id === id);
+      let url = template.url || '';
+      template.keys.forEach(
+        (key) => (url = url.replace(key, builders[key].build(id))),
+      );
+      console.log(url);
+      return { id, url };
+    });
+
+    return 1;
   }
 }
