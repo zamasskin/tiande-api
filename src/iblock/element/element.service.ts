@@ -103,6 +103,9 @@ export class ElementService {
 
     return elementId.map((id) => {
       const template = templates.find((t) => t.id === id);
+      if (!template) {
+        return { id, url: '' };
+      }
       let url = template.url || '';
       template.keys.forEach(
         (key) => (url = url.replace(key, builders[key].build(id))),
