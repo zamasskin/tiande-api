@@ -13,7 +13,7 @@ import { SellerGuard } from './seller.guard';
 
 @ApiTags('Seller')
 @ApiBearerAuth()
-@UseGuards(new SellerGuard())
+@UseGuards(SellerGuard)
 @Controller('seller/discount')
 export class DiscountController {
   constructor(private marketingCampaignService: MarketingCampaignService) {}
