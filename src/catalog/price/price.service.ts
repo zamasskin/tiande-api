@@ -38,7 +38,7 @@ export class PriceService {
     countryId: number,
     lang: string,
   ) {
-    return this.findPriceFormatByProductsIdAndCurrency(
+    return this.findPriceBalFormatByProductsIdAndCurrency(
       productId,
       countryId,
       lang,
@@ -52,11 +52,64 @@ export class PriceService {
     countryId: number,
     lang: string,
   ) {
-    return this.findPriceFormatByProductsIdAndCurrency(
+    return this.findPriceLoyaltyFormatByProductsIdAndCurrency(
       productId,
       countryId,
       lang,
       'FON',
+    );
+  }
+
+  async findPriceFormatByProductsIdAndCurrencyAndPriceType(
+    productId: number[],
+    countryId: number,
+    lang: string,
+    currency: string,
+    type: priceType,
+  ) {
+    const calls = {
+      catalog: this.findPriceByProductsId,
+      bal: this.findPriceBalByProductsId,
+      loyalty: this.findPriceLoyaltyByProductsId,
+    };
+    const method = calls[type];
+    const [prices, converter] = await Promise.all([
+      method.apply(this, [productId, countryId]),
+      this.currencyService.findConverter(lang, currency),
+    ]);
+    return prices.map((p) => ({
+      ...p,
+      priceFormat: converter.format(p.price),
+    }));
+  }
+
+  async findPriceLoyaltyFormatByProductsIdAndCurrency(
+    productId: number[],
+    countryId: number,
+    lang: string,
+    currency: string,
+  ) {
+    return this.findPriceFormatByProductsIdAndCurrencyAndPriceType(
+      productId,
+      countryId,
+      lang,
+      currency,
+      'loyalty',
+    );
+  }
+
+  async findPriceBalFormatByProductsIdAndCurrency(
+    productId: number[],
+    countryId: number,
+    lang: string,
+    currency: string,
+  ) {
+    return this.findPriceFormatByProductsIdAndCurrencyAndPriceType(
+      productId,
+      countryId,
+      lang,
+      currency,
+      'bal',
     );
   }
 
@@ -67,14 +120,13 @@ export class PriceService {
     lang: string,
     currency: string,
   ) {
-    const [prices, converter] = await Promise.all([
-      this.findPriceByProductsId(productId, countryId),
-      this.currencyService.findConverter(lang, currency),
-    ]);
-    return prices.map((p) => ({
-      ...p,
-      priceFormat: converter.format(p.price),
-    }));
+    return this.findPriceFormatByProductsIdAndCurrencyAndPriceType(
+      productId,
+      countryId,
+      lang,
+      currency,
+      'catalog',
+    );
   }
 
   // получение цен
