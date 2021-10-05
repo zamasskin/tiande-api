@@ -3,9 +3,12 @@ import { ConfigService } from '@nestjs/config';
 import { plainToClass } from 'class-transformer';
 import { Knex } from 'knex';
 import * as _ from 'lodash';
+import { Cache } from '../../cache/decorators/cache-promise.decorator';
+import { CacheService } from '../../cache/cache.service';
 import { SiteService } from '../../configurations/site/site.service';
 import { SectionService } from '../section/section.service';
 import { ElementModel } from './models/element.model';
+import { ElementUrlModel } from './models/element-url.model';
 
 type ReturnUrl = Promise<(id: number) => string>;
 
@@ -16,6 +19,7 @@ export class ElementService {
     configService: ConfigService,
     private sectionService: SectionService,
     private siteService: SiteService,
+    private cacheService: CacheService,
   ) {
     this.qb = configService.get('knex');
   }
@@ -77,7 +81,8 @@ export class ElementService {
     return iblockTemplates.map(({ id, url }) => ({ id: Number(id), url }));
   }
 
-  async findUrlsById(elementId: number[]) {
+  @Cache<ElementUrlModel[]>({ ttl: 60 * 60 })
+  async findUrlsById(elementId: number[]): Promise<ElementUrlModel[]> {
     const iblockUrls = await this.findTemplateById(elementId);
     const builderConf = this.findPathBuilderConfig(elementId);
     const regExp = new RegExp(
@@ -101,7 +106,7 @@ export class ElementService {
     }));
     const builders = _.keyBy(await Promise.all(promises), 'key');
 
-    return elementId.map((id) => {
+    const result = elementId.map((id) => {
       const template = templates.find((t) => t.id === id);
       if (!template) {
         return { id, url: '' };
@@ -112,5 +117,6 @@ export class ElementService {
       );
       return { id, url };
     });
+    return plainToClass(ElementUrlModel, result);
   }
 }

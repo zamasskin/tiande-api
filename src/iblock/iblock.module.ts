@@ -5,6 +5,7 @@ import { ElementService } from './element/element.service';
 import { SectionService } from './section/section.service';
 import { IblockService } from './iblock.service';
 import { ConfigurationsModule } from 'src/configurations/configurations.module';
+import { CacheModule } from '../cache/cache.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { ConfigurationsModule } from 'src/configurations/configurations.module';
       load: [configuration],
     }),
     ConfigurationsModule,
+    CacheModule,
   ],
   providers: [IblockService, ElementService, SectionService],
   exports: [IblockService, ElementService, SectionService],
