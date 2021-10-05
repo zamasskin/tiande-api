@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { plainToClass } from 'class-transformer';
 import { Knex } from 'knex';
 import * as _ from 'lodash';
 import { CurrencyService } from '../currency/currency.service';
+import { PriceModel } from './models/price.model';
 
 type priceType = 'catalog' | 'bal' | 'loyalty';
 
@@ -94,11 +96,13 @@ export class PriceService {
     productId: number[],
     countryId: number,
     type: priceType,
-  ): Promise<{ id: number; price: number }[]> {
+  ): Promise<PriceModel[]> {
     if (productId.length === 0) {
       return [];
     }
-    const defaultPrices = productId.map((id) => ({ id, price: 0 }));
+    const defaultPrices = productId.map((id) =>
+      plainToClass(PriceModel, { id, price: 0 }),
+    );
     const priceType = await this.findPriceTypeByCountryId(countryId, type);
     const query = this.qb({ po: 'b_iblock_element_property' })
       .leftJoin({ p: 'b_catalog_price' }, (qb) =>
@@ -110,14 +114,16 @@ export class PriceService {
       .whereIn('po.VALUE', productId)
       .groupBy('po.VALUE')
       .select('po.VALUE as id', 'p.PRICE as price');
-    const prices = (await query).map((p) => ({
-      id: Number(p.id),
-      price: Number(p.price),
-    }));
+    const prices = (await query).map(({ id, price }) =>
+      plainToClass(PriceModel, { id, price }),
+    );
     return _.unionBy(prices, defaultPrices, 'id');
   }
 
-  async findPriceTypeByCountryId(countryId: number, type: priceType) {
+  async findPriceTypeByCountryId(
+    countryId: number,
+    type: priceType,
+  ): Promise<number> {
     const columnName = {
       catalog: 'UF_IS_PRICE',
       bal: 'UF_IS_BALL',
