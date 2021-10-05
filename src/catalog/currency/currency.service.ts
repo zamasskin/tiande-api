@@ -3,6 +3,8 @@ import { ConfigService } from '@nestjs/config';
 import { plainToClass } from 'class-transformer';
 import { Knex } from 'knex';
 import _ from 'lodash';
+import { Cache } from 'src/cache/decorators/cache-promise.decorator';
+import { CacheService } from '../../cache/cache.service';
 import { CountryService } from '../../configurations/country/country.service';
 import { CurrencyLangModel } from './models/currency-lang.model';
 
@@ -12,6 +14,7 @@ export class CurrencyService {
   constructor(
     configService: ConfigService,
     private countryService: CountryService,
+    private cacheService: CacheService,
   ) {
     this.qb = configService.get('knex');
   }
@@ -33,6 +36,7 @@ export class CurrencyService {
     };
   }
 
+  @Cache<CurrencyLangModel>({ ttl: 60 * 60 })
   async findModel(lang: string, currency: string): Promise<CurrencyLangModel> {
     return plainToClass(
       CurrencyLangModel,
