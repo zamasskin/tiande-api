@@ -3,6 +3,8 @@ import { ConfigService } from '@nestjs/config';
 import { plainToClass } from 'class-transformer';
 import { Knex } from 'knex';
 import * as _ from 'lodash';
+import { CacheService } from 'src/cache/cache.service';
+import { Cache } from 'src/cache/decorators/cache-promise.decorator';
 import { CurrencyService } from '../currency/currency.service';
 import { PriceModel } from './models/price.model';
 
@@ -14,6 +16,7 @@ export class PriceService {
   constructor(
     configService: ConfigService,
     private currencyService: CurrencyService,
+    private cacheService: CacheService,
   ) {
     this.qb = configService.get('knex');
   }
@@ -144,6 +147,7 @@ export class PriceService {
     return this.findPricesByProductIdAndType(productId, countryId, 'loyalty');
   }
 
+  @Cache<PriceModel[]>({ ttl: 60 * 60 })
   async findPricesByProductIdAndType(
     productId: number[],
     countryId: number,
@@ -172,6 +176,7 @@ export class PriceService {
     return _.unionBy(prices, defaultPrices, 'id');
   }
 
+  @Cache<number>({ ttl: 60 * 60 })
   async findPriceTypeByCountryId(
     countryId: number,
     type: priceType,
