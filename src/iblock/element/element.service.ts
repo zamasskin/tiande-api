@@ -24,7 +24,8 @@ export class ElementService {
     this.qb = configService.get('knex');
   }
 
-  async findElementsRawById(id: number[]) {
+  @Cache<ElementModel[]>({ ttl: 60 * 60 })
+  async findElementsRawById(id: number[]): Promise<ElementModel[]> {
     return plainToClass<ElementModel, Object[]>(
       ElementModel,
       await this.qb('b_iblock_element').whereIn('ID', id),
