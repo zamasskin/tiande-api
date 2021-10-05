@@ -7,6 +7,7 @@ import { MarketingCampaignModule } from './marketing-campaign/marketing-campaign
 import { CatalogModule } from './catalog/catalog.module';
 import { IblockModule } from './iblock/iblock.module';
 import { ConfigurationsModule } from './configurations/configurations.module';
+import { CacheModule } from './cache/cache.module';
 import configuration from './config/configuration';
 
 @Module({
@@ -19,6 +20,7 @@ import configuration from './config/configuration';
     CatalogModule,
     IblockModule,
     ConfigurationsModule,
+    CacheModule,
   ],
   controllers: [AppController],
   providers: [AppService],
