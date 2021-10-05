@@ -19,7 +19,6 @@ export class SellerGuard implements CanActivate {
       .where('NAME', 'api_access_seller_token')
       .select('VALUE as value')
       .first();
-    console.log(option);
     const req = context.switchToHttp().getRequest();
     const raw_header = (req.header('Authorization') || '').split(' ');
     if (raw_header.length != 2) this.unauthorized(context);
