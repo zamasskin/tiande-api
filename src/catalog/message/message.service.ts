@@ -4,15 +4,24 @@ import { plainToClass } from 'class-transformer';
 import { Knex } from 'knex';
 import { ElementItemsModel } from './models/element-items.model';
 import * as _ from 'lodash';
+import { CacheService } from '../../cache/cache.service';
+import { Cache } from 'src/cache/decorators/cache-promise.decorator';
 
 @Injectable()
 export class MessageService {
   qb: Knex;
-  constructor(configService: ConfigService) {
+  constructor(
+    configService: ConfigService,
+    private cacheService: CacheService,
+  ) {
     this.qb = configService.get('knex');
   }
 
-  async findLangFieldsByProductId(productId: number[], langId: number) {
+  @Cache<ElementItemsModel[]>({ ttl: 60 * 60 })
+  async findLangFieldsByProductId(
+    productId: number[],
+    langId: number,
+  ): Promise<ElementItemsModel[]> {
     const defaultLang = productId.map((id) => {
       const mess = new ElementItemsModel();
       mess.id = id;
