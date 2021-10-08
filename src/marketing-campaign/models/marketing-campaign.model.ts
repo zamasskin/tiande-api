@@ -33,4 +33,8 @@ export class MarketingCampaignModel {
       ? (price * this.discount) / 100
       : price - this.discount;
   }
+
+  @Type(() => Number)
+  @Expose({ name: 'UF_GROUP_ID' })
+  groupId: number;
 }

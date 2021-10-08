@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { MarketingCampaignEntity } from 'src/marketing-campaign/entities/marketing-campaign.entity';
+import { MarketingCampaignGroupInfo } from './marketing_campaign_group_info.entity';
 import { MarketingCampaignInfo } from './marketing_campaign_info.entity';
 
 export class MarketingCampaign implements MarketingCampaignEntity {
@@ -56,4 +57,7 @@ export class MarketingCampaign implements MarketingCampaignEntity {
 
   @ApiProperty()
   stockInfo: MarketingCampaignInfo;
+
+  @ApiProperty()
+  groupInfo: MarketingCampaignGroupInfo;
 }

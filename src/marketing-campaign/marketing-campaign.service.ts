@@ -42,8 +42,11 @@ export class MarketingCampaignService {
     groupsId: number[],
     dto: MarketingCampaignParamsDto,
   ): Promise<MarketingCampaignEntity[]> {
-    const lang = await this.langService.findById(dto.langId);
-    const items = await this.findItemsByGroupId(groupsId, dto);
+    const [lang, items, groups] = await Promise.all([
+      this.langService.findById(dto.langId),
+      this.findItemsByGroupId(groupsId, dto),
+      this.findGroupsByID(groupsId),
+    ]);
     const productId = items.map((item) => item.productId);
     const products = await this.findProducts(dto, productId);
     const converter = await this.currencyService.findConverter(
@@ -53,8 +56,11 @@ export class MarketingCampaignService {
     const mcItems = items.map((item) => {
       const product = products.find((p) => p.id === item.productId);
       const discountPrice = item.calculate(product?.price || 0);
+      const groupInfo = groups.find((g) => g.id === item.groupId);
+      console.log(groupInfo);
       return {
         ...product,
+        groupInfo,
         stockInfo: {
           ...item,
           price: discountPrice,
@@ -65,6 +71,13 @@ export class MarketingCampaignService {
     return plainToClass(MarketingCampaignEntity, mcItems, {
       excludeExtraneousValues: true,
     });
+  }
+
+  async findGroupsByID(id: number[]): Promise<MarketingCampaignGroupModel[]> {
+    return plainToClass<MarketingCampaignGroupModel, Object[]>(
+      MarketingCampaignGroupModel,
+      await this.qb('b_marketing_campaign_group').whereIn('ID', id),
+    );
   }
 
   async findItemsByGroupId(

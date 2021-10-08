@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import { Expose, Type } from 'class-transformer';
 import { MarketingCampaignInfoEntity } from './marketing-campaign-info.entity';
+import { MarketingCampaignGroupInfoEntity } from './marketing-campaign-group-info.entity';
 
 export class MarketingCampaignEntity {
   @Expose()
@@ -57,4 +58,8 @@ export class MarketingCampaignEntity {
   @Expose()
   @Type(() => MarketingCampaignInfoEntity)
   stockInfo: MarketingCampaignInfoEntity;
+
+  @Expose()
+  @Type(() => MarketingCampaignGroupInfoEntity)
+  groupInfo: MarketingCampaignGroupInfoEntity;
 }
