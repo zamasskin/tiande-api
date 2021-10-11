@@ -6,5 +6,5 @@ import { GiftInfoEntity } from './gift-info.entity';
 export class GiftEntity extends StockProductEntity {
   @Expose()
   @Type(() => GiftInfoEntity)
-  giftInfo: GiftInfoEntity;
+  giftInfo: GiftInfoEntity = new GiftInfoEntity();
 }

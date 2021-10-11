@@ -3,8 +3,8 @@ import { Expose, Type } from 'class-transformer';
 
 export class GiftInfoEntity {
   @Expose()
-  id: number;
+  id = 0;
 
   @Expose()
-  used: boolean;
+  used = false;
 }
