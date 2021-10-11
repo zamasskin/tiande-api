@@ -24,14 +24,4 @@ describe('GiftService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
-
-  it('test', async () => {
-    const result = await service.findGifts({
-      userId: 360175,
-      guestId: 111813256,
-      countryId: 134,
-      langId: 1,
-    });
-    expect(1).toEqual(1);
-  });
 });
