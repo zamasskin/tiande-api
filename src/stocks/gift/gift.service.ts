@@ -5,6 +5,7 @@ import { Knex } from 'knex';
 import * as _ from 'lodash';
 import { MarketingCampaignService } from '../marketing-campaign/marketing-campaign.service';
 import { GiftDto } from './dto/gift.dto';
+import { GiftEntity } from './entities/gift.entity';
 import { BasketGiftModel } from './models/basket-gift.model';
 import { PromotionGiftModel } from './models/promotion-gift.model';
 
@@ -19,7 +20,27 @@ export class GiftService {
   }
 
   async findList(dto: GiftDto) {
-    return 1;
+    const [giftOptions, basketGifts] = await Promise.all([
+      this.findGiftOptions(dto.userId),
+      this.findBasketGifts(dto.guestId),
+    ]);
+
+    if (giftOptions.length === 0) {
+      return [];
+    }
+    const id = _.uniq(giftOptions.map((g) => g.productId));
+    const products = await this.marketingCampaignService.findProducts(dto, id);
+    const result = giftOptions.map((gift) => {
+      const used = !!basketGifts.find((b) => b.giftId === gift.id);
+      const product = products.find((p) => p.id === gift.productId);
+      return {
+        ...product,
+        giftInfo: { ...gift, used },
+      };
+    });
+    return plainToClass<GiftEntity, Object[]>(GiftEntity, result, {
+      excludeExtraneousValues: true,
+    });
   }
 
   async findGiftOptions(userId: number): Promise<PromotionGiftModel[]> {
@@ -45,27 +66,5 @@ export class GiftService {
         .where('b.PROMOTION_GIFT_ID', '>', 0)
         .select('*', 'p.VALUE as ELEMENT_ID'),
     );
-  }
-
-  async findGifts(dto: GiftDto) {
-    const [giftOptions, basketGifts] = await Promise.all([
-      this.findGiftOptions(dto.userId),
-      this.findBasketGifts(dto.guestId),
-    ]);
-
-    if (giftOptions.length === 0) {
-      return [];
-    }
-    const id = _.uniq(giftOptions.map((g) => g.productId));
-    const products = await this.marketingCampaignService.findProducts(dto, id);
-    const result = giftOptions.map((gift) => {
-      const used = !!basketGifts.find((b) => b.giftId === gift.id);
-      const product = products.find((p) => p.id === gift.productId);
-      return {
-        ...product,
-        giftInfo: { ...gift, used },
-      };
-    });
-    return result;
   }
 }

@@ -2,59 +2,12 @@ import { ApiProperty } from '@nestjs/swagger';
 import { MarketingCampaignEntity } from 'src/stocks/marketing-campaign/entities/marketing-campaign.entity';
 import { MarketingCampaignGroupInfo } from './marketing_campaign_group_info.entity';
 import { MarketingCampaignInfo } from './marketing_campaign_info.entity';
+import { StockProduct } from './stock_product.entity';
 
-export class MarketingCampaign implements MarketingCampaignEntity {
-  @ApiProperty()
-  id: number;
-
-  @ApiProperty()
-  url: string;
-
-  @ApiProperty()
-  code: string;
-
-  @ApiProperty()
-  name: string;
-
-  @ApiProperty()
-  pictureId: number;
-
-  @ApiProperty()
-  detailPictureId: number;
-
-  @ApiProperty()
-  text: string;
-
-  @ApiProperty()
-  detailText: string;
-
-  @ApiProperty()
-  sectionId: number;
-
-  @ApiProperty()
-  sort: number;
-
-  @ApiProperty()
-  xmlId: string;
-
-  @ApiProperty()
-  price: number;
-
-  @ApiProperty()
-  priceFormat: string;
-
-  @ApiProperty()
-  priceBal: number;
-
-  @ApiProperty()
-  priceBalFormat: string;
-
-  @ApiProperty()
-  article: string;
-
-  @ApiProperty()
-  skItemVal: string;
-
+export class MarketingCampaign
+  extends StockProduct
+  implements MarketingCampaignEntity
+{
   @ApiProperty()
   stockInfo: MarketingCampaignInfo;
 
