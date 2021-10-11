@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import configuration from 'src/config/configuration';
 import { StocksModule } from 'src/stocks/stocks.module';
-import { DiscountController } from './discount.controller';
+import { StockController } from './stock.controller';
 
 @Module({
   imports: [
@@ -11,6 +11,6 @@ import { DiscountController } from './discount.controller';
       load: [configuration],
     }),
   ],
-  controllers: [DiscountController],
+  controllers: [StockController],
 })
 export class StockModule {}

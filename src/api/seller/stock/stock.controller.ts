@@ -16,7 +16,7 @@ import { SellerGuard } from '../seller.guard';
 @ApiBearerAuth()
 @UseGuards(SellerGuard)
 @Controller('seller/stock')
-export class DiscountController {
+export class StockController {
   constructor(private stockService: StocksService) {}
 
   @Post('/marketing-campaign')
@@ -30,7 +30,7 @@ export class DiscountController {
   }
 
   @Post('/gifts')
-  @ApiOperation({ summary: 'Get gufts' })
+  @ApiOperation({ summary: 'Get gifts' })
   @ApiOkResponse({ type: [Gift] })
   @ApiForbiddenResponse({ status: 403, description: 'Forbidden.' })
   async getGifts(
