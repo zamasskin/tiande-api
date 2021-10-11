@@ -16,7 +16,7 @@ import { StockList } from './entities/stock_list.entity';
 @ApiTags('Seller')
 @ApiBearerAuth()
 @UseGuards(SellerGuard)
-@Controller('seller/stock')
+@Controller('seller/v1/stock')
 export class StockController {
   constructor(private stockService: StocksService) {}
 
