@@ -2,59 +2,9 @@ import 'reflect-metadata';
 import { Expose, Type } from 'class-transformer';
 import { MarketingCampaignInfoEntity } from './marketing-campaign-info.entity';
 import { MarketingCampaignGroupInfoEntity } from './marketing-campaign-group-info.entity';
+import { StockProductEntity } from 'src/stocks/entities/stock-product.entity';
 
-export class MarketingCampaignEntity {
-  @Expose()
-  id: number;
-
-  @Expose()
-  url: string;
-
-  @Expose()
-  code: string;
-
-  @Expose()
-  name: string;
-
-  @Expose()
-  pictureId: number;
-
-  @Expose()
-  detailPictureId: number;
-
-  @Expose()
-  text: string;
-
-  @Expose()
-  detailText: string;
-
-  @Expose()
-  sectionId: number;
-
-  @Expose()
-  sort: number;
-
-  @Expose()
-  xmlId: string;
-
-  @Expose()
-  price: number;
-
-  @Expose()
-  priceFormat: string;
-
-  @Expose()
-  priceBal: number;
-
-  @Expose()
-  priceBalFormat: string;
-
-  @Expose()
-  article: string;
-
-  @Expose()
-  skItemVal: string;
-
+export class MarketingCampaignEntity extends StockProductEntity {
   @Expose()
   @Type(() => MarketingCampaignInfoEntity)
   stockInfo: MarketingCampaignInfoEntity;
