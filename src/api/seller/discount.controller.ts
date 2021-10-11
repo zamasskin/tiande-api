@@ -6,7 +6,7 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { MarketingCampaignService } from 'src/stocks/marketing-campaign/marketing-campaign.service';
+import { StocksService } from 'src/stocks/stocks.service';
 import { GetMarketingCampaignDto } from './dto/marketing_campaign.dto';
 import { MarketingCampaign } from './entities/marketing_campaign.entity';
 import { SellerGuard } from './seller.guard';
@@ -16,7 +16,7 @@ import { SellerGuard } from './seller.guard';
 @UseGuards(SellerGuard)
 @Controller('seller/discount')
 export class DiscountController {
-  constructor(private marketingCampaignService: MarketingCampaignService) {}
+  constructor(private stockService: StocksService) {}
 
   @Post()
   @ApiOperation({ summary: 'Get marketingCampaign' })
@@ -25,6 +25,6 @@ export class DiscountController {
   async getMarketingCampaign(
     @Body() getMarketingCampaignDto: GetMarketingCampaignDto,
   ): Promise<MarketingCampaign[]> {
-    return this.marketingCampaignService.findList(getMarketingCampaignDto);
+    return this.stockService.findMarketingCampaignList(getMarketingCampaignDto);
   }
 }
