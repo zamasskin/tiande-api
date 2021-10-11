@@ -13,7 +13,7 @@ import { ElementModel } from '../../iblock/element/models/element.model';
 import { MarketingCampaignModel } from './models/marketing-campaign.model';
 import { CurrencyService } from '../../catalog/currency/currency.service';
 import { MarketingCampaignEntity } from './entities/marketing-campaign.entity';
-import { ProductService } from 'src/catalog/product/product.service';
+import { ProductService } from '../../catalog/product/product.service';
 
 @Injectable()
 export class MarketingCampaignService {

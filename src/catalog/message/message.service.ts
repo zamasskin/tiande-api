@@ -5,7 +5,7 @@ import { Knex } from 'knex';
 import { ElementItemsModel } from './models/element-items.model';
 import * as _ from 'lodash';
 import { CacheService } from '../../cache/cache.service';
-import { Cache } from 'src/cache/decorators/cache-promise.decorator';
+import { Cache } from '../../cache/decorators/cache-promise.decorator';
 
 @Injectable()
 export class MessageService {

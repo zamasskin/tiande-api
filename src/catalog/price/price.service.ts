@@ -3,8 +3,8 @@ import { ConfigService } from '@nestjs/config';
 import { plainToClass } from 'class-transformer';
 import { Knex } from 'knex';
 import * as _ from 'lodash';
-import { CacheService } from 'src/cache/cache.service';
-import { Cache } from 'src/cache/decorators/cache-promise.decorator';
+import { CacheService } from '../../cache/cache.service';
+import { Cache } from '../../cache/decorators/cache-promise.decorator';
 import { CurrencyService } from '../currency/currency.service';
 import { PriceModel } from './models/price.model';
 
