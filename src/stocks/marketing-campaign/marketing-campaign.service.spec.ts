@@ -1,9 +1,9 @@
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CatalogModule } from '../catalog/catalog.module';
-import configuration from '../config/configuration';
-import { ConfigurationsModule } from '../configurations/configurations.module';
-import { IblockModule } from '../iblock/iblock.module';
+import { CatalogModule } from '../../catalog/catalog.module';
+import configuration from '../../config/configuration';
+import { ConfigurationsModule } from '../../configurations/configurations.module';
+import { IblockModule } from '../../iblock/iblock.module';
 import { MarketingCampaignParamsDto } from './dto/marketing-campaign-params.dto';
 import { MarketingCampaignService } from './marketing-campaign.service';
 

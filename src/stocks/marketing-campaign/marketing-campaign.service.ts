@@ -4,14 +4,14 @@ import { MarketingCampaignParamsDto } from './dto/marketing-campaign-params.dto'
 import { Knex } from 'knex';
 import { plainToClass } from 'class-transformer';
 import { MarketingCampaignGroupModel } from './models/marketing-campaign-group.model';
-import { PriceService } from '../catalog/price/price.service';
-import { ElementService } from '../iblock/element/element.service';
-import { MessageService } from '../catalog/message/message.service';
-import { LangService } from '../configurations/lang/lang.service';
+import { PriceService } from '../../catalog/price/price.service';
+import { ElementService } from '../../iblock/element/element.service';
+import { MessageService } from '../../catalog/message/message.service';
+import { LangService } from '../../configurations/lang/lang.service';
 import * as _ from 'lodash';
-import { ElementModel } from '../iblock/element/models/element.model';
+import { ElementModel } from '../../iblock/element/models/element.model';
 import { MarketingCampaignModel } from './models/marketing-campaign.model';
-import { CurrencyService } from '../catalog/currency/currency.service';
+import { CurrencyService } from '../../catalog/currency/currency.service';
 import { MarketingCampaignEntity } from './entities/marketing-campaign.entity';
 import { ProductService } from 'src/catalog/product/product.service';
 

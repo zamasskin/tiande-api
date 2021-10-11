@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsInt } from 'class-validator';
-import { MarketingCampaignParamsDto } from 'src/marketing-campaign/dto/marketing-campaign-params.dto';
+import { MarketingCampaignParamsDto } from 'src/stocks/marketing-campaign/dto/marketing-campaign-params.dto';
 
 export class GetMarketingCampaignDto implements MarketingCampaignParamsDto {
   @ApiProperty()

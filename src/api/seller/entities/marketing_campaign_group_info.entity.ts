@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { MarketingCampaignGroupInfoEntity } from 'src/marketing-campaign/entities/marketing-campaign-group-info.entity';
+import { MarketingCampaignGroupInfoEntity } from 'src/stocks/marketing-campaign/entities/marketing-campaign-group-info.entity';
 
 export class MarketingCampaignGroupInfo
   implements MarketingCampaignGroupInfoEntity
