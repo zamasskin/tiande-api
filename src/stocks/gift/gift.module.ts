@@ -5,6 +5,7 @@ import configuration from 'src/config/configuration';
 import { ConfigurationsModule } from '../../configurations/configurations.module';
 import { IblockModule } from 'src/iblock/iblock.module';
 import { GiftService } from './gift.service';
+import { MarketingCampaignModel } from '../marketing-campaign/models/marketing-campaign.model';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { GiftService } from './gift.service';
     CatalogModule,
     IblockModule,
     ConfigurationsModule,
+    MarketingCampaignModel,
   ],
   providers: [GiftService],
   exports: [GiftService],
