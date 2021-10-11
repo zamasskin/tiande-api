@@ -1,4 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import { plainToClass } from 'class-transformer';
+import { StockListEntity } from './entities/stock-list.entity';
 import { GiftDto } from './gift/dto/gift.dto';
 import { GiftService } from './gift/gift.service';
 import { MarketingCampaignParamsDto } from './marketing-campaign/dto/marketing-campaign-params.dto';
@@ -17,5 +19,18 @@ export class StocksService {
 
   findGiftList(dto: GiftDto) {
     return this.giftService.findList(dto);
+  }
+
+  async findList(dto: MarketingCampaignParamsDto | GiftDto) {
+    const [marketingCampaigns, gifts] = await Promise.all([
+      this.marketingCampaignService.findList(dto),
+      this.giftService.findList(dto),
+    ]);
+
+    const result = [
+      ...marketingCampaigns.map((mc) => ({ ...mc, isGift: false })),
+      ...gifts.map((g) => ({ ...g, isGift: true })),
+    ];
+    return plainToClass(StockListEntity, result);
   }
 }
