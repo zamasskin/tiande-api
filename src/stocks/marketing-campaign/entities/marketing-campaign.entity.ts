@@ -7,9 +7,9 @@ import { StockProductEntity } from 'src/stocks/entities/stock-product.entity';
 export class MarketingCampaignEntity extends StockProductEntity {
   @Expose()
   @Type(() => MarketingCampaignInfoEntity)
-  stockInfo: MarketingCampaignInfoEntity;
+  stockInfo: MarketingCampaignInfoEntity = new MarketingCampaignInfoEntity();
 
   @Expose()
   @Type(() => MarketingCampaignGroupInfoEntity)
-  groupInfo: MarketingCampaignGroupInfoEntity;
+  groupInfo: MarketingCampaignGroupInfoEntity = new MarketingCampaignGroupInfoEntity();
 }

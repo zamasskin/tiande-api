@@ -3,29 +3,29 @@ import { Expose, Type } from 'class-transformer';
 
 export class MarketingCampaignInfoEntity {
   @Expose()
-  id: number;
+  id = 0;
 
   @Expose()
-  video: string;
+  video = '';
 
   @Expose()
-  discount: number;
+  discount = 0;
 
   @Expose()
-  storiesId: number;
+  storiesId = 0;
 
   @Expose()
-  description: string;
+  description = '';
 
   @Expose()
-  productId: number;
+  productId = 0;
 
   @Expose()
-  price: number;
+  price = 0;
 
   @Expose()
-  priceFormat: string;
+  priceFormat = '';
 
   @Expose()
-  discountPercent: boolean;
+  discountPercent = false;
 }

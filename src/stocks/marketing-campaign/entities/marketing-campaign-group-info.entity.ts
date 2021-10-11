@@ -6,16 +6,16 @@ export class MarketingCampaignGroupInfoEntity
   implements MarketingCampaignGroupModel
 {
   @Expose()
-  id: number;
+  id = 0;
 
   @Expose()
-  orderRepeat: boolean;
+  orderRepeat = false;
 
   @Expose()
-  name: string;
+  name = '';
 
   @Expose()
-  promoCode: string;
+  promoCode = '';
 
   @Expose()
   startActiveDate: Date;
