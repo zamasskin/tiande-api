@@ -19,7 +19,7 @@ export class GiftService {
     this.qb = configService.get('knex');
   }
 
-  async findList(dto: GiftDto) {
+  async findList(dto: GiftDto): Promise<GiftEntity[]> {
     const [giftOptions, basketGifts] = await Promise.all([
       this.findGiftOptions(dto.userId),
       this.findBasketGifts(dto.guestId),
@@ -38,7 +38,7 @@ export class GiftService {
         giftInfo: { ...gift, used },
       };
     });
-    return plainToClass<GiftEntity, Object[]>(GiftEntity, result, {
+    return plainToClass(GiftEntity, result, {
       excludeExtraneousValues: true,
     });
   }
