@@ -25,4 +25,7 @@ export class MarketingCampaignInfo implements MarketingCampaignInfoEntity {
 
   @ApiProperty()
   priceFormat: string;
+
+  @ApiProperty()
+  discountPercent: boolean;
 }

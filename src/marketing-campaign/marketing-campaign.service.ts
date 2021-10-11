@@ -57,12 +57,12 @@ export class MarketingCampaignService {
       const product = products.find((p) => p.id === item.productId);
       const discountPrice = item.calculate(product?.price || 0);
       const groupInfo = groups.find((g) => g.id === item.groupId);
-      console.log(groupInfo);
       return {
         ...product,
         groupInfo,
         stockInfo: {
           ...item,
+          discountPercent: item.discountPercent,
           price: discountPrice,
           priceFormat: converter.format(discountPrice),
         },

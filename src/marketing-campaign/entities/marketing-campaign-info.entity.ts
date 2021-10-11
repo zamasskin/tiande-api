@@ -25,4 +25,7 @@ export class MarketingCampaignInfoEntity {
 
   @Expose()
   priceFormat: string;
+
+  @Expose()
+  discountPercent: boolean;
 }
