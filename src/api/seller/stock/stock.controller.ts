@@ -11,6 +11,7 @@ import { GetMarketingCampaignDto } from './dto/marketing_campaign.dto';
 import { Gift } from './entities/gift.entity';
 import { MarketingCampaign } from './entities/marketing_campaign.entity';
 import { SellerGuard } from '../seller.guard';
+import { StockList } from './entities/stock_list.entity';
 
 @ApiTags('Seller')
 @ApiBearerAuth()
@@ -37,5 +38,15 @@ export class StockController {
     @Body() getMarketingCampaignDto: GetMarketingCampaignDto,
   ): Promise<Gift[]> {
     return this.stockService.findGiftList(getMarketingCampaignDto);
+  }
+
+  @Post('/list')
+  @ApiOperation({ summary: 'Get marketingCampaign and gifts' })
+  @ApiOkResponse({ type: [StockList] })
+  @ApiForbiddenResponse({ status: 403, description: 'Forbidden.' })
+  async getList(
+    @Body() getMarketingCampaignDto: GetMarketingCampaignDto,
+  ): Promise<StockList[]> {
+    return this.stockService.findList(getMarketingCampaignDto);
   }
 }
