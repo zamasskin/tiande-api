@@ -10,7 +10,7 @@ import { StocksService } from 'src/stocks/stocks.service';
 import { GetMarketingCampaignDto } from './dto/marketing_campaign.dto';
 import { Gift } from './entities/gift.entity';
 import { MarketingCampaign } from './entities/marketing_campaign.entity';
-import { SellerGuard } from './seller.guard';
+import { SellerGuard } from '../seller.guard';
 
 @ApiTags('Seller')
 @ApiBearerAuth()
