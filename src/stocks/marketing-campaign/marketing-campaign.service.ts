@@ -152,8 +152,16 @@ export class MarketingCampaignService {
   // Запрос без доп фильтров для получения групп
   groupQuery(): Knex.QueryBuilder {
     return this.qb({ g: 'b_marketing_campaign_group' })
-      .where('g.UF_DATE_START', '<=', new Date())
-      .where('g.UF_DATE_END', '>=', new Date())
+      .where((qb) =>
+        qb
+          .where('g.UF_DATE_START', '<=', new Date())
+          .orWhereNull('g.UF_DATE_START'),
+      )
+      .where((qb) =>
+        qb
+          .where('g.UF_DATE_END', '>=', new Date())
+          .orWhereNull('g.UF_DATE_END'),
+      )
       .where('g.UF_ACTIVE', 1);
   }
 
