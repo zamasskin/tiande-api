@@ -7,4 +7,7 @@ export class GiftInfoEntity {
 
   @Expose()
   used = false;
+
+  @Expose()
+  dateEnd: Date;
 }

@@ -28,9 +28,30 @@ export class StocksService {
     ]);
 
     const result = [
-      ...marketingCampaigns.map((mc) => ({ ...mc, isGift: false })),
-      ...gifts.map((g) => ({ ...g, isGift: true })),
+      ...marketingCampaigns.map((mc) => ({
+        ...mc,
+        isGift: false,
+        dateEnd: mc.groupInfo.endActiveDate,
+      })),
+      ...gifts.map((g) => ({
+        ...g,
+        isGift: true,
+        dateEnd: g.giftInfo.dateEnd,
+      })),
     ];
+    result.sort((a, b) => {
+      if (a.dateEnd === b.dateEnd) {
+        return 0;
+      }
+      if (!a.dateEnd) {
+        return 1;
+      }
+      if (!b.dateEnd) {
+        return -1;
+      }
+      return a.dateEnd > b.dateEnd ? 1 : -1;
+    });
+
     return plainToClass(StockListEntity, result);
   }
 }

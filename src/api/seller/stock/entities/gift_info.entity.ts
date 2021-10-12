@@ -7,4 +7,7 @@ export class GiftInfo implements GiftInfoEntity {
 
   @ApiProperty()
   used: boolean;
+
+  @ApiProperty()
+  dateEnd: Date;
 }

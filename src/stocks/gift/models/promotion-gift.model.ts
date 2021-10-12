@@ -9,4 +9,8 @@ export class PromotionGiftModel {
   @Type(() => Number)
   @Expose({ name: 'UF_PRODUCT' })
   productId: number;
+
+  @Type(() => Date)
+  @Expose({ name: 'UF_DATE_END' })
+  dateEnd: Date;
 }
