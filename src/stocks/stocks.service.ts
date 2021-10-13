@@ -52,6 +52,6 @@ export class StocksService {
       return a.dateEnd > b.dateEnd ? 1 : -1;
     });
 
-    return plainToClass(StockListEntity, result);
+    return plainToClass(StockListEntity, result, { exposeUnsetFields: false });
   }
 }
