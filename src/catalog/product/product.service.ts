@@ -27,4 +27,21 @@ export class ProductService {
     );
     return _.unionBy(properties, defaultProperties, 'id');
   }
+
+  async getProductsByOfferId(id: number[]) {
+    const properties = await this.qb('b_iblock_element_property')
+      .where('IBLOCK_PROPERTY_ID', 111)
+      .whereIn('IBLOCK_ELEMENT_ID', id)
+      .select('VALUE as productId', 'IBLOCK_ELEMENT_ID as offerId');
+
+    return id.map((offerId) => {
+      const property = properties.find((p) => Number(p.offerId) === offerId);
+      return { offerId, productId: property?.productId || 0 };
+    });
+  }
+
+  async getProductByOfferId(id: number) {
+    const [{ productId }] = await this.getProductsByOfferId([id]);
+    return productId;
+  }
 }
