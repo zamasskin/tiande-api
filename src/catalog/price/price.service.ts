@@ -176,6 +176,19 @@ export class PriceService {
     return _.unionBy(prices, defaultPrices, 'id');
   }
 
+  async findPriceByProductIdAndType(
+    productId: number,
+    countryId: number,
+    type: priceType,
+  ) {
+    const [{ price = 0 }] = await this.findPricesByProductIdAndType(
+      [productId],
+      countryId,
+      type,
+    );
+    return price;
+  }
+
   @Cache<number>({ ttl: 60 * 60 })
   async findPriceTypeByCountryId(
     countryId: number,
