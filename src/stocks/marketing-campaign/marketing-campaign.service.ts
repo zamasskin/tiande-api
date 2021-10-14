@@ -82,7 +82,7 @@ export class MarketingCampaignService {
 
   async findItemsByGroupId(
     groupsId: number[],
-    dto: MarketingCampaignParamsDto,
+    dto: { langId: number; countryId: number },
   ): Promise<MarketingCampaignModel[]> {
     const lang = await this.langService.findById(dto.langId);
     const query = this.qb({ mc: 'b_marketing_campaign' })
