@@ -33,6 +33,11 @@ export class CurrencyService {
       formatRaw: (number: number) => this.formatRaw(number, model),
       formatRawCeil: (number: number) => this.formatRawCeil(number, model),
       formatRawFloor: (number: number) => this.formatRawFloor(number, model),
+      formatNumber: (number: number) => Number(number.toFixed(model.decimals)),
+      formatNumberCeil: (number: number) =>
+        model.decimals > 0 ? _.ceil(number, model.decimals) : _.ceil(number),
+      formatNumberFloor: (number: number) =>
+        model.decimals > 0 ? _.floor(number, model.decimals) : _.floor(number),
     };
   }
 
