@@ -80,16 +80,20 @@ export class MarketingCampaignService {
     );
   }
 
+  getItemsQueryByGroupIdAndCountry(groupsId: number[], countryId: number) {
+    return this.qb({ mc: 'b_marketing_campaign' })
+      .leftJoin({ c: 'b_marketing_campaign_uf_country' }, 'c.ID', 'mc.ID')
+      .leftJoin({ p: 'b_marketing_campaign_uf_product_id' }, 'p.ID', 'mc.ID')
+      .whereIn('mc.UF_GROUP_ID', groupsId)
+      .where('c.VALUE', countryId);
+  }
+
   async findItemsByGroupId(
     groupsId: number[],
     dto: { langId: number; countryId: number },
   ): Promise<MarketingCampaignModel[]> {
     const lang = await this.langService.findById(dto.langId);
-    const query = this.qb({ mc: 'b_marketing_campaign' })
-      .leftJoin({ c: 'b_marketing_campaign_uf_country' }, 'c.ID', 'mc.ID')
-      .leftJoin({ p: 'b_marketing_campaign_uf_product_id' }, 'p.ID', 'mc.ID')
-      .whereIn('mc.UF_GROUP_ID', groupsId)
-      .where('c.VALUE', dto.countryId)
+    const query = this.getItemsQueryByGroupIdAndCountry(groupsId, dto.countryId)
       .select(
         '*',
         `mc.UF_DESCRIPTION_${lang.code.toUpperCase()} as UF_DESCRIPTION`,
