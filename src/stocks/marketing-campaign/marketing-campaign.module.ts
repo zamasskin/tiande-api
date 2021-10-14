@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { CatalogModule } from '../../catalog/catalog.module';
 import { IblockModule } from '../../iblock/iblock.module';
 import { ConfigurationsModule } from '../../configurations/configurations.module';
+import { BasketService } from './basket/basket.service';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { ConfigurationsModule } from '../../configurations/configurations.module
     IblockModule,
     ConfigurationsModule,
   ],
-  providers: [MarketingCampaignService],
+  providers: [MarketingCampaignService, BasketService],
   exports: [MarketingCampaignService],
 })
 export class MarketingCampaignModule {}
