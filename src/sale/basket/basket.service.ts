@@ -1,13 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Knex } from 'knex';
+import { PriceService } from 'src/catalog/price/price.service';
 import { BasketEntity } from './entities/basket.entity';
 
 @Injectable()
 export class BasketService {
   qb: Knex;
 
-  constructor(configService: ConfigService) {
+  constructor(
+    configService: ConfigService,
+    private priceService: PriceService,
+  ) {
     this.qb = configService.get('knex');
   }
 
