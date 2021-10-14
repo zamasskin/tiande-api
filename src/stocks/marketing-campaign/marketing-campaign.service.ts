@@ -264,4 +264,14 @@ export class MarketingCampaignService {
       .select('b.MARKETING_CAMPAIGN_ID as marketingCampaignId');
     return groups.map((group) => Number(group.marketingCampaignId));
   }
+
+  async checkProductByGroupId(
+    productId: number,
+    groupId: number,
+    country: number,
+  ) {
+    const query = this.getItemsQueryByGroupIdAndCountry([groupId], country);
+    const result = await query.where('p.VALUE', productId);
+    return !!result;
+  }
 }
