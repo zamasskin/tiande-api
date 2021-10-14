@@ -28,7 +28,7 @@ export class ProductService {
     return _.unionBy(properties, defaultProperties, 'id');
   }
 
-  async getProductsByOfferId(
+  async findProductsByOfferId(
     id: number[],
   ): Promise<{ offerId: number; productId: number }[]> {
     const properties = await this.qb('b_iblock_element_property')
@@ -42,8 +42,8 @@ export class ProductService {
     });
   }
 
-  async getProductByOfferId(id: number): Promise<number> {
-    const [{ productId }] = await this.getProductsByOfferId([id]);
+  async findProductByOfferId(id: number): Promise<number> {
+    const [{ productId }] = await this.findProductsByOfferId([id]);
     return productId;
   }
 }
