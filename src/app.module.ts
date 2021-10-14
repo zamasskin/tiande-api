@@ -8,6 +8,7 @@ import { IblockModule } from './iblock/iblock.module';
 import { ConfigurationsModule } from './configurations/configurations.module';
 import { CacheModule } from './cache/cache.module';
 import { StocksModule } from './stocks/stocks.module';
+import { SaleModule } from './sale/sale.module';
 import configuration from './config/configuration';
 
 @Module({
@@ -21,6 +22,7 @@ import configuration from './config/configuration';
     ConfigurationsModule,
     CacheModule,
     StocksModule,
+    SaleModule,
   ],
   controllers: [AppController],
   providers: [AppService],
