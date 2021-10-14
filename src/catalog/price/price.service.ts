@@ -180,7 +180,7 @@ export class PriceService {
     productId: number,
     countryId: number,
     type: priceType,
-  ) {
+  ): Promise<number> {
     const [{ price = 0 }] = await this.findPricesByProductIdAndType(
       [productId],
       countryId,
