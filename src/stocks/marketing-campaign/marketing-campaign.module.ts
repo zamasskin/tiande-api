@@ -6,6 +6,7 @@ import { CatalogModule } from '../../catalog/catalog.module';
 import { IblockModule } from '../../iblock/iblock.module';
 import { ConfigurationsModule } from '../../configurations/configurations.module';
 import { BasketService } from './basket/basket.service';
+import { BasketModule } from 'src/sale/basket/basket.module';
 
 @Module({
   imports: [
@@ -15,8 +16,9 @@ import { BasketService } from './basket/basket.service';
     CatalogModule,
     IblockModule,
     ConfigurationsModule,
+    BasketModule,
   ],
   providers: [MarketingCampaignService, BasketService],
-  exports: [MarketingCampaignService],
+  exports: [MarketingCampaignService, BasketService],
 })
 export class MarketingCampaignModule {}

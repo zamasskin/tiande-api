@@ -274,4 +274,19 @@ export class MarketingCampaignService {
     const result = await query.where('p.VALUE', productId);
     return !!result;
   }
+
+  async findStockByGroupAndProductId(
+    groupId: number,
+    productId: number,
+    countryId: number,
+  ): Promise<MarketingCampaignModel> {
+    const query = this.getItemsQueryByGroupIdAndCountry([groupId], countryId)
+      .where('p.VALUE', productId)
+      .select(
+        '*',
+        `mc.UF_DESCRIPTION_RU as UF_DESCRIPTION`,
+        'p.VALUE as PRODUCT_ID',
+      );
+    return plainToClass(MarketingCampaignModel, await query.first());
+  }
 }
