@@ -1,4 +1,12 @@
-import { Body, Controller, Inject, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiForbiddenResponse,
@@ -55,9 +63,14 @@ export class StockController {
   @ApiOperation({ summary: 'Set Basket' })
   @ApiOkResponse({ type: Number })
   @ApiForbiddenResponse({ status: 403, description: 'Forbidden.' })
-  addMarketingCampaign(
+  async addMarketingCampaign(
     @Body() dto: MarketingCampaignBasketDto,
   ): Promise<number> {
-    return this.stockService.marketingCampaignAddBasket(dto);
+    try {
+      const result = await this.stockService.marketingCampaignAddBasket(dto);
+      return result;
+    } catch (e) {
+      throw new HttpException(e.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }
