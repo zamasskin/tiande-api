@@ -120,4 +120,9 @@ export class ElementService {
     });
     return plainToClass(ElementUrlModel, result);
   }
+
+  async findUrlById(elementId: number) {
+    const [{ url }] = await this.findUrlsById([elementId]);
+    return url;
+  }
 }
