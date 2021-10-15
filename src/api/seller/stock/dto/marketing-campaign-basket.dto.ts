@@ -6,6 +6,10 @@ import { MCBasketParamsDto } from 'src/stocks/marketing-campaign/basket/dto/mc-b
 export class MarketingCampaignBasketDto implements MCBasketParamsDto {
   @ApiProperty()
   @IsInt()
+  userId: number;
+
+  @ApiProperty()
+  @IsInt()
   stockGroupId: number;
 
   @ApiProperty()
