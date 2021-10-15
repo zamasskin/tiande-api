@@ -151,4 +151,8 @@ export class BasketEntity {
   set dimensions(dimensions: any) {
     this._dimensions = serialize(dimensions);
   }
+
+  @Type(() => Number)
+  @Expose({ name: 'MARKETING_CAMPAIGN_ID' })
+  marketingCampaignId = 0;
 }
