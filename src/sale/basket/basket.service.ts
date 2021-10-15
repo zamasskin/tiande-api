@@ -22,6 +22,12 @@ export class BasketService {
     this.qb = configService.get('knex');
   }
 
+  basketQueryByGuestId(guestId: number) {
+    return this.qb('b_sale_basket')
+      .where('FUSER_ID', guestId)
+      .whereNull('ORDER_ID');
+  }
+
   async findSaveData(dto: BasketDto) {
     const productId = await this.productService.findProductByOfferId(
       dto.offerId,
