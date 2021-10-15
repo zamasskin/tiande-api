@@ -12,6 +12,7 @@ import { Gift } from './entities/gift.entity';
 import { MarketingCampaign } from './entities/marketing_campaign.entity';
 import { SellerGuard } from '../seller.guard';
 import { StockList } from './entities/stock_list.entity';
+import { MarketingCampaignBasketDto } from './dto/marketing-campaign-basket.dto';
 
 @ApiTags('Seller')
 @ApiBearerAuth()
@@ -48,5 +49,15 @@ export class StockController {
     @Body() getMarketingCampaignDto: GetMarketingCampaignDto,
   ): Promise<StockList[]> {
     return this.stockService.findList(getMarketingCampaignDto);
+  }
+
+  @Post('/marketing-campaign/add-basket')
+  @ApiOperation({ summary: 'Set Basket' })
+  @ApiOkResponse({ type: Number })
+  @ApiForbiddenResponse({ status: 403, description: 'Forbidden.' })
+  addMarketingCampaign(
+    @Body() dto: MarketingCampaignBasketDto,
+  ): Promise<number> {
+    return this.stockService.marketingCampaignAddBasket(dto);
   }
 }

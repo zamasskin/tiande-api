@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { classToPlain } from 'class-transformer';
 import { Knex } from 'knex';
 import { CurrencyService } from 'src/catalog/currency/currency.service';
 import { PriceService } from 'src/catalog/price/price.service';
 import { ProductService } from 'src/catalog/product/product.service';
 import { CountryService } from 'src/configurations/country/country.service';
+import { ElementService } from 'src/iblock/element/element.service';
 import { BasketDto } from './dto/basket.dto';
 import { BasketEntity } from './entities/basket.entity';
 
@@ -18,6 +20,7 @@ export class BasketService {
     private productService: ProductService,
     private currencyService: CurrencyService,
     private countryService: CountryService,
+    private elementService: ElementService,
   ) {
     this.qb = configService.get('knex');
   }
@@ -32,7 +35,7 @@ export class BasketService {
     const productId = await this.productService.findProductByOfferId(
       dto.offerId,
     );
-    const [price, priceId, priceBal, currencyConverter, discountAfterFo] =
+    const [price, priceId, priceBal, currencyConverter, discountAfterFo, url] =
       await Promise.all([
         // Получаем цену
         this.priceService.findPriceByProductIdAndType(
@@ -52,6 +55,8 @@ export class BasketService {
         this.currencyService.findConverter('ru', dto.currency),
         // Настройка для определения скидки
         this.countryService.findDiscountAfterFoById(dto.countryId),
+        // Получение ссылки на продукт
+        this.elementService.findUrlById(productId),
       ]);
 
     const convertPrice = currencyConverter.formatNumber(price);
@@ -67,8 +72,18 @@ export class BasketService {
     basketData.currency = dto.currency;
     basketData.quantity = dto.quantity;
     basketData.sku = dto.sku;
+    basketData.guestId = dto.guestId;
     basketData.additionalDiscount = discountAfterFo;
+    basketData.productUrl = url;
     return basketData;
+  }
+
+  async save(basket: BasketEntity) {
+    const basketFields = classToPlain(basket, {
+      exposeUnsetFields: false,
+    });
+    const [id] = await this.qb('b_sale_basket').insert(basketFields);
+    return id;
   }
 
   async findProductStockId(offerId: number, countryId: number) {

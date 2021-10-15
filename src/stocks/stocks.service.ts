@@ -3,6 +3,8 @@ import { plainToClass } from 'class-transformer';
 import { StockListEntity } from './entities/stock-list.entity';
 import { GiftDto } from './gift/dto/gift.dto';
 import { GiftService } from './gift/gift.service';
+import { BasketService as MCBasketService } from './marketing-campaign/basket/basket.service';
+import { MCBasketParamsDto } from './marketing-campaign/basket/dto/mc-basket-params.dto';
 import { MarketingCampaignParamsDto } from './marketing-campaign/dto/marketing-campaign-params.dto';
 import { MarketingCampaignService } from './marketing-campaign/marketing-campaign.service';
 
@@ -11,10 +13,15 @@ export class StocksService {
   constructor(
     private marketingCampaignService: MarketingCampaignService,
     private giftService: GiftService,
+    private mcBasketService: MCBasketService,
   ) {}
 
   findMarketingCampaignList(dto: MarketingCampaignParamsDto) {
     return this.marketingCampaignService.findList(dto);
+  }
+
+  marketingCampaignAddBasket(dto: MCBasketParamsDto) {
+    return this.mcBasketService.add(dto);
   }
 
   findGiftList(dto: GiftDto) {
