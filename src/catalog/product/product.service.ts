@@ -44,6 +44,6 @@ export class ProductService {
 
   async findProductByOfferId(id: number): Promise<number> {
     const [{ productId }] = await this.findProductsByOfferId([id]);
-    return productId;
+    return Number(productId);
   }
 }

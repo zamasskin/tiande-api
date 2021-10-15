@@ -23,11 +23,12 @@ export class BasketService {
     const productId = await this.productService.findProductByOfferId(
       dto.offerId,
     );
-    const checkStock = await this.mcService.checkProductByGroupId(
-      productId,
-      dto.stockGroupId,
-      dto.countryId,
-    );
+    const checkStock = await this.mcService.check(productId, {
+      guestId: dto.guestId,
+      userId: dto.userId,
+      countryId: dto.countryId,
+      langId: 1,
+    });
     if (!checkStock) {
       throw new Error('check error');
     }

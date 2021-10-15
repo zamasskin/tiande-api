@@ -275,6 +275,12 @@ export class MarketingCampaignService {
     return !!result;
   }
 
+  async check(productId: number, dto: MarketingCampaignParamsDto) {
+    const stockList = await this.findList(dto);
+    const id = stockList.map((s) => s.id);
+    return id.includes(productId);
+  }
+
   async findStockByGroupAndProductId(
     groupId: number,
     productId: number,
