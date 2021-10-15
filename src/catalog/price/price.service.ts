@@ -6,6 +6,7 @@ import * as _ from 'lodash';
 import { CacheService } from '../../cache/cache.service';
 import { Cache } from '../../cache/decorators/cache-promise.decorator';
 import { CurrencyService } from '../currency/currency.service';
+import { PriceEntity } from './entities/price.entity';
 import { PriceModel } from './models/price.model';
 
 type priceType = 'catalog' | 'bal' | 'loyalty';
@@ -205,5 +206,25 @@ export class PriceService {
       .select('UF_PRICE_TYPE_ID as id')
       .first();
     return Number(result.id) || 0;
+  }
+
+  @Cache<PriceEntity[]>({ ttl: 60 * 60 })
+  async findPricesByProductsId(productId: number[]): Promise<PriceEntity[]> {
+    const prices = plainToClass<PriceEntity, Object[]>(
+      PriceEntity,
+      await this.qb('b_catalog_price').whereIn('PRODUCT_ID', productId),
+    );
+
+    return productId.map((productId) => {
+      const _default = new PriceEntity();
+      _default.productId = productId;
+      const price = prices.find((p) => p.productId === productId);
+      return price ? price : _default;
+    });
+  }
+
+  async findPriceIdByProductId(productId: number) {
+    const [{ id }] = await this.findPricesByProductsId([productId]);
+    return id;
   }
 }
