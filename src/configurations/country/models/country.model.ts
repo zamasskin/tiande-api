@@ -8,4 +8,8 @@ export class CountryModel {
 
   @Expose({ name: 'UF_CURRENCY' })
   currency = 'RUB';
+
+  @Type(() => Number)
+  @Expose({ name: 'UF_DISCOUNT_AFTER_FO' })
+  discountAfterFo: number;
 }

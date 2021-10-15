@@ -23,4 +23,9 @@ export class CountryService {
       await this.qb('bit_country').where('ID', id).first(),
     );
   }
+
+  async findDiscountAfterFoById(id: number) {
+    const { discountAfterFo } = await this.findById(id);
+    return discountAfterFo > 0 ? discountAfterFo : 35;
+  }
 }
