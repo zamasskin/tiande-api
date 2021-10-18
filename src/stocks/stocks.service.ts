@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
+import * as _ from 'lodash';
 import { StockListEntity } from './entities/stock-list.entity';
 import { GiftDto } from './gift/dto/gift.dto';
 import { GiftService } from './gift/gift.service';
@@ -16,8 +17,10 @@ export class StocksService {
     private mcBasketService: MCBasketService,
   ) {}
 
-  findMarketingCampaignList(dto: MarketingCampaignParamsDto) {
-    return this.marketingCampaignService.findList(dto);
+  async findMarketingCampaignList(dto: MarketingCampaignParamsDto) {
+    const items = await this.marketingCampaignService.findList(dto);
+    items.sort(this.sortByDate('groupInfo.endActiveDate'));
+    return items;
   }
 
   marketingCampaignAddBasket(dto: MCBasketParamsDto) {
@@ -26,6 +29,23 @@ export class StocksService {
 
   findGiftList(dto: GiftDto) {
     return this.giftService.findList(dto);
+  }
+
+  sortByDate<T>(template: string) {
+    return (a: T, b: T) => {
+      const aDate = _.get(a, template, null);
+      const bDate = _.get(b, template, null);
+      if (aDate === bDate) {
+        return 0;
+      }
+      if (!aDate) {
+        return 1;
+      }
+      if (!bDate) {
+        return -1;
+      }
+      return aDate > bDate ? 1 : -1;
+    };
   }
 
   async findList(dto: MarketingCampaignParamsDto | GiftDto) {
@@ -46,18 +66,7 @@ export class StocksService {
         dateEnd: g.giftInfo.dateEnd,
       })),
     ];
-    result.sort((a, b) => {
-      if (a.dateEnd === b.dateEnd) {
-        return 0;
-      }
-      if (!a.dateEnd) {
-        return 1;
-      }
-      if (!b.dateEnd) {
-        return -1;
-      }
-      return a.dateEnd > b.dateEnd ? 1 : -1;
-    });
+    result.sort(this.sortByDate('dateEnd'));
 
     return plainToClass(StockListEntity, result, { exposeUnsetFields: false });
   }
