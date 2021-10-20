@@ -275,9 +275,15 @@ export class MarketingCampaignService {
     return !!result;
   }
 
-  async check(productId: number, dto: MarketingCampaignParamsDto) {
+  async check(
+    productId: number,
+    groupId: number,
+    dto: MarketingCampaignParamsDto,
+  ) {
     const stockList = await this.findList(dto);
-    const id = stockList.map((s) => s.id);
+    const id = stockList
+      .filter((s) => s.groupInfo.id === groupId)
+      .map((s) => s.id);
     return id.includes(productId);
   }
 
