@@ -23,6 +23,12 @@ export class BasketService {
     const productId = await this.productService.findProductByOfferId(
       dto.offerId,
     );
+
+    const checkBasket = await this.checkBasket(dto);
+    if (!checkBasket) {
+      throw new Error('check basket error');
+    }
+
     const checkStock = await this.mcService.check(productId, {
       guestId: dto.guestId,
       userId: dto.userId,
@@ -31,10 +37,6 @@ export class BasketService {
     });
     if (!checkStock) {
       throw new Error('check error');
-    }
-
-    if (!(await this.checkBasket)) {
-      throw new Error('check basket error');
     }
 
     const saveData = await this.findSaveData(dto, productId);
