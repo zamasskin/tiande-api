@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { classToPlain, plainToClass } from 'class-transformer';
-import { Knex } from 'knex';
+import knex, { Knex } from 'knex';
 import { CurrencyService } from 'src/catalog/currency/currency.service';
 import { PriceService } from 'src/catalog/price/price.service';
 import { ProductService } from 'src/catalog/product/product.service';
@@ -91,6 +91,18 @@ export class BasketService {
     });
     const [id] = await this.qb('b_sale_basket').insert(basketFields);
     return id;
+  }
+
+  setCanBayById(canBay: boolean, id: number | number[]) {
+    const query = this.qb('b_sale_basket').update({
+      CAN_BUY: canBay ? 'Y' : 'N',
+    });
+    if (Array.isArray(id)) {
+      query.whereIn('ID', id);
+    } else {
+      query.where('ID', id);
+    }
+    return query;
   }
 
   async findProductStockId(offerId: number, countryId: number) {
