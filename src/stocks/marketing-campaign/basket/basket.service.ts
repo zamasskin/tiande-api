@@ -4,6 +4,7 @@ import { Knex } from 'knex';
 import { ProductService } from 'src/catalog/product/product.service';
 import { BasketService as SaleBasketService } from 'src/sale/basket/basket.service';
 import { BasketEntity } from 'src/sale/basket/entities/basket.entity';
+import { MarketingCampaignParamsDto } from '../dto/marketing-campaign-params.dto';
 import { MarketingCampaignEntity } from '../entities/marketing-campaign.entity';
 import { MarketingCampaignService } from '../marketing-campaign.service';
 import { MCBasketParamsDto } from './dto/mc-basket-params.dto';
@@ -46,6 +47,18 @@ export class BasketService {
 
     const saveData = await this.findSaveData(dto, productId);
     return this.basketService.save(saveData);
+  }
+
+  async checkAndUpdate(dto: MarketingCampaignParamsDto): Promise<void> {
+    const [basketList, stocks] = await Promise.all([
+      this.basketService.findBasketRaw(dto.guestId),
+      this.mcService.findList(dto),
+    ]);
+
+    await Promise.all([
+      this.activateCanBay(basketList, stocks),
+      this.deactivateCanBay(basketList, stocks),
+    ]);
   }
 
   async checkBasket(dto: MCBasketParamsDto) {
