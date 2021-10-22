@@ -73,4 +73,17 @@ export class StockController {
       throw new HttpException(e.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+
+  @Post('/marketing-campaign/check-basket')
+  @ApiOperation({ summary: 'Check basket' })
+  @ApiOkResponse({ type: Boolean })
+  @ApiForbiddenResponse({ status: 403, description: 'Forbidden.' })
+  async checkMarketingCampaign(
+    @Body() getMarketingCampaignDto: GetMarketingCampaignDto,
+  ): Promise<Boolean> {
+    await this.stockService.marketingCampaignBasketCheckAndUpdate(
+      getMarketingCampaignDto,
+    );
+    return true;
+  }
 }
