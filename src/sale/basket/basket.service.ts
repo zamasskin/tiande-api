@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { classToPlain } from 'class-transformer';
+import { classToPlain, plainToClass } from 'class-transformer';
 import { Knex } from 'knex';
 import { CurrencyService } from 'src/catalog/currency/currency.service';
 import { PriceService } from 'src/catalog/price/price.service';
@@ -29,6 +29,13 @@ export class BasketService {
     return this.qb('b_sale_basket')
       .where('FUSER_ID', guestId)
       .whereNull('ORDER_ID');
+  }
+
+  async findBasketRaw(guestId: number) {
+    return plainToClass<BasketEntity, Object[]>(
+      BasketEntity,
+      await this.basketQueryByGuestId(guestId),
+    );
   }
 
   async findSaveData(dto: BasketDto) {
