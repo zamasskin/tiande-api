@@ -86,4 +86,18 @@ export class StockController {
     );
     return true;
   }
+
+  @Post('/marketing-campaign/check-basket-background')
+  @ApiOperation({ summary: 'Check basket' })
+  @ApiOkResponse({ type: Boolean })
+  @ApiForbiddenResponse({ status: 403, description: 'Forbidden.' })
+  checkMarketingCampaignBackground(
+    @Body() getMarketingCampaignDto: GetMarketingCampaignDto,
+  ): Boolean {
+    this.stockService
+      .marketingCampaignBasketCheckAndUpdate(getMarketingCampaignDto)
+      .then()
+      .catch();
+    return true;
+  }
 }
