@@ -29,12 +29,16 @@ export class BasketService {
       throw new Error('check basket error');
     }
 
-    const checkStock = await this.mcService.check(productId, dto.stockGroupId, {
-      guestId: dto.guestId,
-      userId: dto.userId,
-      countryId: dto.countryId,
-      langId: 1,
-    });
+    const checkStock = await this.mcService.checkByProductIdAndGroupId(
+      productId,
+      dto.stockGroupId,
+      {
+        guestId: dto.guestId,
+        userId: dto.userId,
+        countryId: dto.countryId,
+        langId: 1,
+      },
+    );
     if (!checkStock) {
       throw new Error('check error');
     }

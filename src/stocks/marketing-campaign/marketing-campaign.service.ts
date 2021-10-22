@@ -275,7 +275,7 @@ export class MarketingCampaignService {
     return !!result;
   }
 
-  async check(
+  async checkByProductIdAndGroupId(
     productId: number,
     groupId: number,
     dto: MarketingCampaignParamsDto,
