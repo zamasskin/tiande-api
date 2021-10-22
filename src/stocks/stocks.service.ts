@@ -70,4 +70,8 @@ export class StocksService {
 
     return plainToClass(StockListEntity, result, { exposeUnsetFields: false });
   }
+
+  marketingCampaignBasketCheckAndUpdate(dto: MarketingCampaignParamsDto) {
+    return this.mcBasketService.checkAndUpdate(dto);
+  }
 }
