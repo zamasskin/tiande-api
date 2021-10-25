@@ -41,10 +41,21 @@ export class BasketService {
     return this.basketService.save(saveData);
   }
 
+  async findAvailableStocks(dto: MarketingCampaignParamsDto) {
+    const stocks = await this.mcService.findItemsRaw(dto);
+    const stocksId = stocks.map((stock) => stock.id);
+    const orderStocks =
+      await this.mcService.findBasketOrderByMarketingCampaignId(
+        dto.userId,
+        stocksId,
+      );
+    return stocks.filter((stock) => !orderStocks.includes(stock.id));
+  }
+
   async checkAndUpdate(dto: MarketingCampaignParamsDto): Promise<void> {
     const [basketList, stocks] = await Promise.all([
       this.basketService.findBasketRaw(dto.guestId),
-      this.mcService.findItemsRaw(dto),
+      this.findAvailableStocks(dto),
     ]);
 
     await Promise.all([
