@@ -70,6 +70,12 @@ export class MarketingCampaignService {
       .where('c.VALUE', countryId);
   }
 
+  async findItems(dto: MarketingCampaignParamsDto) {
+    const groups = await this.findGroup(dto.userId);
+    const groupsId = groups.map((g) => g.id);
+    return this.findItemsByGroupId(groupsId, dto);
+  }
+
   async findItemsByGroupId(
     groupsId: number[],
     dto: MarketingCampaignParamsDto,
