@@ -5,8 +5,8 @@ import { ProductService } from 'src/catalog/product/product.service';
 import { BasketService as SaleBasketService } from 'src/sale/basket/basket.service';
 import { BasketEntity } from 'src/sale/basket/entities/basket.entity';
 import { MarketingCampaignParamsDto } from '../dto/marketing-campaign-params.dto';
-import { MarketingCampaignEntity } from '../entities/marketing-campaign.entity';
 import { MarketingCampaignService } from '../marketing-campaign.service';
+import { MarketingCampaignModel } from '../models/marketing-campaign.model';
 import { MCBasketParamsDto } from './dto/mc-basket-params.dto';
 
 @Injectable()
@@ -44,7 +44,7 @@ export class BasketService {
   async checkAndUpdate(dto: MarketingCampaignParamsDto): Promise<void> {
     const [basketList, stocks] = await Promise.all([
       this.basketService.findBasketRaw(dto.guestId),
-      this.mcService.findList(dto),
+      this.mcService.findItemsRaw(dto),
     ]);
 
     await Promise.all([
@@ -73,29 +73,16 @@ export class BasketService {
 
   async activateCanBay(
     basketList: BasketEntity[],
-    stocks: MarketingCampaignEntity[],
+    stocks: MarketingCampaignModel[],
   ) {
+    const stocksId = stocks.map((stock) => stock.id);
     const basketListForActivate = basketList.filter(
-      (b) => b.canBay === false && b.marketingCampaignId > 0,
+      (b) => b.canBay === false && stocksId.includes(b.marketingCampaignId),
     );
     if (basketListForActivate.length === 0) {
       return [];
     }
-    const productsId = basketListForActivate.map((b) => b.productId);
-    const productOffers = await this.productService.findProductsByOfferId(
-      productsId,
-    );
-    const activateBasketList = basketListForActivate.filter((basket) => {
-      const { productId } = productOffers.find(
-        (po) => po.offerId === basket.productId,
-      );
-
-      return !!stocks.find(
-        (s) =>
-          s.groupInfo.id === basket.marketingCampaignId && s.id === productId,
-      );
-    });
-    const activateId = activateBasketList.map((b) => b.id);
+    const activateId = basketListForActivate.map((b) => b.id);
     if (activateId.length > 0) {
       await this.basketService.setCanBayById(true, activateId);
     }
@@ -104,29 +91,16 @@ export class BasketService {
 
   async deactivateCanBay(
     basketList: BasketEntity[],
-    stocks: MarketingCampaignEntity[],
+    stocks: MarketingCampaignModel[],
   ) {
+    const stocksId = stocks.map((stock) => stock.id);
     const basketListForActivate = basketList.filter(
-      (b) => b.canBay === true && b.marketingCampaignId > 0,
+      (b) =>
+        b.canBay === true &&
+        b.marketingCampaignId > 0 &&
+        !stocksId.includes(b.marketingCampaignId),
     );
-    if (basketListForActivate.length === 0) {
-      return [];
-    }
-    const productsId = basketListForActivate.map((b) => b.productId);
-    const productOffers = await this.productService.findProductsByOfferId(
-      productsId,
-    );
-    const deactivateBasketList = basketListForActivate.filter((basket) => {
-      const { productId } = productOffers.find(
-        (po) => po.offerId === basket.productId,
-      );
-
-      return !stocks.find(
-        (s) =>
-          s.groupInfo.id === basket.marketingCampaignId && s.id === productId,
-      );
-    });
-    const deactivateId = deactivateBasketList.map((b) => b.id);
+    const deactivateId = basketListForActivate.map((b) => b.id);
     if (deactivateId.length > 0) {
       await this.basketService.setCanBayById(false, deactivateId);
     }
