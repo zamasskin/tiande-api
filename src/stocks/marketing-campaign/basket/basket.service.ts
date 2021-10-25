@@ -22,30 +22,22 @@ export class BasketService {
   }
 
   async add(dto: MCBasketParamsDto) {
-    const productId = await this.productService.findProductByOfferId(
-      dto.offerId,
-    );
-
     const checkBasket = await this.checkBasket(dto);
     if (!checkBasket) {
       throw new Error('check basket error');
     }
 
-    const checkStock = await this.mcService.checkByProductIdAndGroupId(
-      productId,
-      dto.stockGroupId,
-      {
-        guestId: dto.guestId,
-        userId: dto.userId,
-        countryId: dto.countryId,
-        langId: 1,
-      },
-    );
+    const checkStock = await this.mcService.check(dto.stockGroupId, {
+      guestId: dto.guestId,
+      userId: dto.userId,
+      countryId: dto.countryId,
+      langId: 1,
+    });
     if (!checkStock) {
       throw new Error('check error');
     }
 
-    const saveData = await this.findSaveData(dto, productId);
+    const saveData = await this.findSaveData(dto);
     return this.basketService.save(saveData);
   }
 
@@ -68,14 +60,10 @@ export class BasketService {
     return result.length === 0;
   }
 
-  async findSaveData(dto: MCBasketParamsDto, productId: number) {
+  async findSaveData(dto: MCBasketParamsDto) {
     const [basketData, stock] = await Promise.all([
       this.basketService.findSaveData(dto),
-      this.mcService.findStockByGroupAndProductId(
-        dto.stockGroupId,
-        productId,
-        dto.countryId,
-      ),
+      this.mcService.getItemById(dto.stockGroupId),
     ]);
     basketData.marketingCampaignId = dto.stockGroupId;
     basketData.oldPrice = basketData.price;
