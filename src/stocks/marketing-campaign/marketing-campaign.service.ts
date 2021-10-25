@@ -74,16 +74,22 @@ export class MarketingCampaignService {
       .where('c.VALUE', countryId);
   }
 
+  async findItemsRaw(dto: MarketingCampaignParamsDto) {
+    const groups = await this.findGroup(dto.userId);
+    const groupsId = groups.map((g) => g.id);
+    return this.findItemsRawByGroupId(groupsId, dto);
+  }
+
   async findItems(dto: MarketingCampaignParamsDto) {
     const groups = await this.findGroup(dto.userId);
     const groupsId = groups.map((g) => g.id);
     return this.findItemsByGroupId(groupsId, dto);
   }
 
-  async findItemsByGroupId(
+  async findItemsRawByGroupId(
     groupsId: number[],
     dto: MarketingCampaignParamsDto,
-  ): Promise<MarketingCampaignModel[]> {
+  ) {
     const lang = await this.langService.findById(dto.langId);
     const query = this.getItemsQueryByGroupIdAndCountry(groupsId, dto.countryId)
       .select(
@@ -92,15 +98,21 @@ export class MarketingCampaignService {
         'p.VALUE as PRODUCT_ID',
       )
       .groupBy('p.VALUE');
+    return plainToClass<MarketingCampaignModel, Object[]>(
+      MarketingCampaignModel,
+      await query,
+    );
+  }
 
-    const [itemsRaw, basket] = await Promise.all([
-      query,
+  async findItemsByGroupId(
+    groupsId: number[],
+    dto: MarketingCampaignParamsDto,
+  ): Promise<MarketingCampaignModel[]> {
+    const [items, basket] = await Promise.all([
+      this.findItemsRawByGroupId(groupsId, dto),
       this.findBasketMarketingCampaignId(dto.guestId),
     ]);
-    const items = plainToClass<MarketingCampaignModel, Object[]>(
-      MarketingCampaignModel,
-      itemsRaw,
-    );
+
     const itemsId = items.map((item) => item.id);
     const order = await this.findBasketOrderByMarketingCampaignId(
       dto.userId,
