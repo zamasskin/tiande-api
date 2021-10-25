@@ -110,6 +110,11 @@ export class MarketingCampaignService {
     return items.filter((item) => !excludeId.includes(item.id));
   }
 
+  async getItemById(id: number) {
+    const item = await this.getItemsQuery().where('mc.ID', id).first();
+    return plainToClass(MarketingCampaignModel, item);
+  }
+
   async findProducts(dto: MarketingCampaignParamsDto, productId: number[]) {
     const lang = await this.langService.findById(dto.langId);
     const [elements, properties, prices, pricesBal, messages, elementUrls] =
