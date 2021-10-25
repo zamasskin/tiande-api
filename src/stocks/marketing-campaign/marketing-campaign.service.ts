@@ -62,10 +62,14 @@ export class MarketingCampaignService {
     });
   }
 
-  getItemsQueryByGroupIdAndCountry(groupsId: number[], countryId: number) {
+  getItemsQuery() {
     return this.qb({ mc: 'b_marketing_campaign' })
       .leftJoin({ c: 'b_marketing_campaign_uf_country' }, 'c.ID', 'mc.ID')
-      .leftJoin({ p: 'b_marketing_campaign_uf_product_id' }, 'p.ID', 'mc.ID')
+      .leftJoin({ p: 'b_marketing_campaign_uf_product_id' }, 'p.ID', 'mc.ID');
+  }
+
+  getItemsQueryByGroupIdAndCountry(groupsId: number[], countryId: number) {
+    return this.getItemsQuery()
       .whereIn('mc.UF_GROUP_ID', groupsId)
       .where('c.VALUE', countryId);
   }
