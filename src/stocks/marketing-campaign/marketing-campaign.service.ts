@@ -271,4 +271,10 @@ export class MarketingCampaignService {
       );
     return plainToClass(MarketingCampaignModel, await query.first());
   }
+
+  async check(stockId: number, dto: MarketingCampaignParamsDto) {
+    const stocks = await this.findItems(dto);
+    const stocksId = stocks.map((stock) => stock.id);
+    return stocksId.includes(stockId);
+  }
 }
