@@ -30,22 +30,11 @@ export class MarketingCampaignService {
     this.qb = configService.get('knex');
   }
   async findList(dto: MarketingCampaignParamsDto) {
-    const groupsId = await this.findGroupId(
-      Number(dto.guestId),
-      Number(dto.userId),
-    );
-    const items = await this.findItemsProductsByGroupId(groupsId, dto);
-    return items;
-  }
-
-  async findItemsProductsByGroupId(
-    groupsId: number[],
-    dto: MarketingCampaignParamsDto,
-  ): Promise<MarketingCampaignEntity[]> {
-    const [lang, items, groups] = await Promise.all([
+    const groups = await this.findGroup(dto.userId);
+    const groupsId = groups.map((g) => g.id);
+    const [lang, items] = await Promise.all([
       this.langService.findById(dto.langId),
       this.findItemsByGroupId(groupsId, dto),
-      this.findGroupsByID(groupsId),
     ]);
     const productId = items.map((item) => item.productId);
     const products = await this.findProducts(dto, productId);
@@ -73,13 +62,6 @@ export class MarketingCampaignService {
     });
   }
 
-  async findGroupsByID(id: number[]): Promise<MarketingCampaignGroupModel[]> {
-    return plainToClass<MarketingCampaignGroupModel, Object[]>(
-      MarketingCampaignGroupModel,
-      await this.qb('b_marketing_campaign_group').whereIn('ID', id),
-    );
-  }
-
   getItemsQueryByGroupIdAndCountry(groupsId: number[], countryId: number) {
     return this.qb({ mc: 'b_marketing_campaign' })
       .leftJoin({ c: 'b_marketing_campaign_uf_country' }, 'c.ID', 'mc.ID')
@@ -90,7 +72,7 @@ export class MarketingCampaignService {
 
   async findItemsByGroupId(
     groupsId: number[],
-    dto: { langId: number; countryId: number },
+    dto: MarketingCampaignParamsDto,
   ): Promise<MarketingCampaignModel[]> {
     const lang = await this.langService.findById(dto.langId);
     const query = this.getItemsQueryByGroupIdAndCountry(groupsId, dto.countryId)
@@ -101,10 +83,21 @@ export class MarketingCampaignService {
       )
       .groupBy('p.VALUE');
 
-    return plainToClass<MarketingCampaignModel, Object[]>(
+    const [itemsRaw, basket] = await Promise.all([
+      query,
+      this.findBasketMarketingCampaignId(dto.guestId),
+    ]);
+    const items = plainToClass<MarketingCampaignModel, Object[]>(
       MarketingCampaignModel,
-      await query,
+      itemsRaw,
     );
+    const itemsId = items.map((item) => item.id);
+    const order = await this.findBasketOrderByMarketingCampaignId(
+      dto.userId,
+      itemsId,
+    );
+    const excludeId = [...basket, ...order];
+    return items.filter((item) => !excludeId.includes(item.id));
   }
 
   async findProducts(dto: MarketingCampaignParamsDto, productId: number[]) {
@@ -148,11 +141,6 @@ export class MarketingCampaignService {
     });
   }
 
-  // Приводим ид группы к числу
-  mapGroup(group: { id: number | string }) {
-    return Number(group.id);
-  }
-
   // Запрос без доп фильтров для получения групп
   groupQuery(): Knex.QueryBuilder {
     return this.qb({ g: 'b_marketing_campaign_group' })
@@ -167,27 +155,6 @@ export class MarketingCampaignService {
           .orWhereNull('g.UF_DATE_END'),
       )
       .where('g.UF_ACTIVE', 1);
-  }
-
-  // Получаем доступные ид групп
-  async findGroupId(guestId: number, userId: number): Promise<number[]> {
-    const groups = await this.findGroup(userId);
-    if (groups.length === 0) {
-      return [];
-    }
-    const [basketGroups, orderGroups] = await Promise.all([
-      this.findBasketMarketingCampaignId(guestId),
-      this.findBasketOrderByMarketingCampaignId(
-        userId,
-        groups.map((group) => group.id),
-      ),
-    ]);
-    return groups
-      .filter(
-        (group) =>
-          !(basketGroups.includes(group.id) || orderGroups.includes(group.id)),
-      )
-      .map((group) => group.id);
   }
 
   // Получаем список групп
@@ -257,22 +224,19 @@ export class MarketingCampaignService {
     }
     const groups = await this.qb({ o: 'b_sale_order' })
       .leftJoin({ b: 'b_sale_basket' }, 'b.ORDER_ID', 'o.ID')
+      .leftJoin(
+        { m: 'b_marketing_campaign' },
+        'm.ID',
+        'b.MARKETING_CAMPAIGN_ID',
+      )
+      .leftJoin({ mg: 'b_marketing_campaign_group' }, 'mg.ID', 'm.UF_GROUP_ID')
       .where('o.USER_ID', userId)
       .where('o.CANCELED', 'N')
+      .where('mg.UF_REPEAT_ORDER', '<>', 1)
       .whereIn('b.MARKETING_CAMPAIGN_ID', marketingCampaignId)
       .groupBy('b.MARKETING_CAMPAIGN_ID')
       .select('b.MARKETING_CAMPAIGN_ID as marketingCampaignId');
     return groups.map((group) => Number(group.marketingCampaignId));
-  }
-
-  async checkProductByGroupId(
-    productId: number,
-    groupId: number,
-    country: number,
-  ) {
-    const query = this.getItemsQueryByGroupIdAndCountry([groupId], country);
-    const result = await query.where('p.VALUE', productId);
-    return !!result;
   }
 
   async checkByProductIdAndGroupId(
