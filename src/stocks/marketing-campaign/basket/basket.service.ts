@@ -27,7 +27,7 @@ export class BasketService {
       throw new Error('check basket error');
     }
 
-    const checkStock = await this.mcService.check(dto.stockGroupId, {
+    const checkStock = await this.mcService.check(dto.stockId, {
       guestId: dto.guestId,
       userId: dto.userId,
       countryId: dto.countryId,
@@ -67,16 +67,16 @@ export class BasketService {
   async checkBasket(dto: MCBasketParamsDto) {
     const result = await this.basketService
       .basketQueryByGuestId(dto.guestId)
-      .where('MARKETING_CAMPAIGN_ID', dto.stockGroupId);
+      .where('MARKETING_CAMPAIGN_ID', dto.stockId);
     return result.length === 0;
   }
 
   async findSaveData(dto: MCBasketParamsDto) {
     const [basketData, stock] = await Promise.all([
       this.basketService.findSaveData(dto),
-      this.mcService.getItemById(dto.stockGroupId),
+      this.mcService.getItemById(dto.stockId),
     ]);
-    basketData.marketingCampaignId = dto.stockGroupId;
+    basketData.marketingCampaignId = dto.stockId;
     basketData.oldPrice = basketData.price;
     basketData.price = stock.calculate(basketData.price);
     return basketData;

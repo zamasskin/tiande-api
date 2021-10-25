@@ -6,5 +6,5 @@ export class MCBasketParamsDto extends BasketDto {
   readonly userId: number;
 
   @IsInt()
-  readonly stockGroupId: number;
+  readonly stockId: number;
 }

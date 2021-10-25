@@ -10,7 +10,7 @@ export class MarketingCampaignBasketDto implements MCBasketParamsDto {
 
   @ApiProperty()
   @IsInt()
-  stockGroupId: number;
+  stockId: number;
 
   @ApiProperty()
   @IsInt()
