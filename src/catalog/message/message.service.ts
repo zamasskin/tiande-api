@@ -34,6 +34,14 @@ export class MessageService {
     return _.unionBy(langItems, defaultLang, 'id');
   }
 
+  async findLangFieldsByProductId(
+    productId: number,
+    langId: number,
+  ): Promise<ElementItemsModel> {
+    const [item] = await this.findLangFieldsByProductsId([productId], langId);
+    return item;
+  }
+
   getLangElementQuery(langId: number) {
     const elementQuery = this.qb({ e: 'b_iblock_element' })
       .leftJoin(
