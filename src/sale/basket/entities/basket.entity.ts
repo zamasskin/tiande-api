@@ -7,6 +7,9 @@ export class BasketEntity {
   @Expose({ name: 'ID' })
   id?: number;
 
+  @Expose({ name: 'NAME' })
+  name: string;
+
   @Type(() => Number)
   @Expose({ name: 'ORDER_ID' })
   orderId?: number;

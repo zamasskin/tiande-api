@@ -16,4 +16,7 @@ export class BasketDto {
 
   @IsInt()
   readonly quantity: number;
+
+  @IsInt()
+  readonly langId: number;
 }

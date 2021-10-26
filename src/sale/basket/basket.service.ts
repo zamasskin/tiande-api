@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { classToPlain, plainToClass } from 'class-transformer';
 import knex, { Knex } from 'knex';
 import { CurrencyService } from 'src/catalog/currency/currency.service';
+import { MessageService } from 'src/catalog/message/message.service';
 import { PriceService } from 'src/catalog/price/price.service';
 import { ProductService } from 'src/catalog/product/product.service';
 import { CountryService } from 'src/configurations/country/country.service';
@@ -21,6 +22,7 @@ export class BasketService {
     private currencyService: CurrencyService,
     private countryService: CountryService,
     private elementService: ElementService,
+    private messageService: MessageService,
   ) {
     this.qb = configService.get('knex');
   }
@@ -42,29 +44,38 @@ export class BasketService {
     const productId = await this.productService.findProductByOfferId(
       dto.offerId,
     );
-    const [price, priceId, priceBal, currencyConverter, discountAfterFo, url] =
-      await Promise.all([
-        // Получаем цену
-        this.priceService.findPriceByProductIdAndType(
-          productId,
-          dto.countryId,
-          'catalog',
-        ),
-        // Получаем ид цены
-        this.priceService.findPriceIdByProductId(dto.offerId),
-        // Получаем цену в балах
-        this.priceService.findPriceByProductIdAndType(
-          productId,
-          dto.countryId,
-          'bal',
-        ),
-        // Получаем класс для конвертации в валюту
-        this.currencyService.findConverter('ru', dto.currency),
-        // Настройка для определения скидки
-        this.countryService.findDiscountAfterFoById(dto.countryId),
-        // Получение ссылки на продукт
-        this.elementService.findUrlById(productId),
-      ]);
+    const [
+      price,
+      priceId,
+      priceBal,
+      currencyConverter,
+      discountAfterFo,
+      url,
+      { name },
+    ] = await Promise.all([
+      // Получаем цену
+      this.priceService.findPriceByProductIdAndType(
+        productId,
+        dto.countryId,
+        'catalog',
+      ),
+      // Получаем ид цены
+      this.priceService.findPriceIdByProductId(dto.offerId),
+      // Получаем цену в балах
+      this.priceService.findPriceByProductIdAndType(
+        productId,
+        dto.countryId,
+        'bal',
+      ),
+      // Получаем класс для конвертации в валюту
+      this.currencyService.findConverter('ru', dto.currency),
+      // Настройка для определения скидки
+      this.countryService.findDiscountAfterFoById(dto.countryId),
+      // Получение ссылки на продукт
+      this.elementService.findUrlById(productId),
+      // Получение переведенного названия
+      this.messageService.findLangFieldsByProductId(productId, dto.langId),
+    ]);
 
     const convertPrice = currencyConverter.formatNumber(price);
     if (!convertPrice) {
@@ -82,6 +93,7 @@ export class BasketService {
     basketData.guestId = dto.guestId;
     basketData.additionalDiscount = discountAfterFo;
     basketData.productUrl = url;
+    basketData.name = name;
     return basketData;
   }
 

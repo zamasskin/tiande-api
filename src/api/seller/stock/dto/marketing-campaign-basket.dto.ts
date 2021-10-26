@@ -24,6 +24,10 @@ export class MarketingCampaignBasketDto implements MCBasketParamsDto {
   @IsInt()
   countryId: number;
 
+  @ApiProperty({ default: 1, required: false })
+  @IsInt()
+  langId: number;
+
   @ApiProperty()
   currency: string;
 
