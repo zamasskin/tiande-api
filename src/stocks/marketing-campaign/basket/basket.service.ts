@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Knex } from 'knex';
+import { CurrencyService } from 'src/catalog/currency/currency.service';
 import { ProductService } from 'src/catalog/product/product.service';
+import { LangService } from 'src/configurations/lang/lang.service';
 import { BasketService as SaleBasketService } from 'src/sale/basket/basket.service';
 import { BasketEntity } from 'src/sale/basket/entities/basket.entity';
 import { MarketingCampaignParamsDto } from '../dto/marketing-campaign-params.dto';
@@ -17,6 +19,8 @@ export class BasketService {
     private productService: ProductService,
     private mcService: MarketingCampaignService,
     private basketService: SaleBasketService,
+    private currencyService: CurrencyService,
+    private langService: LangService,
   ) {
     this.qb = configService.get('knex');
   }
@@ -72,13 +76,16 @@ export class BasketService {
   }
 
   async findSaveData(dto: MCBasketParamsDto) {
-    const [basketData, stock] = await Promise.all([
+    const lang = await this.langService.findById(dto.langId);
+    const [basketData, stock, converter] = await Promise.all([
       this.basketService.findSaveData(dto),
       this.mcService.getItemById(dto.stockId),
+      this.currencyService.findConverter(lang.code, dto.currency),
     ]);
     basketData.marketingCampaignId = dto.stockId;
-    basketData.oldPrice = basketData.price;
+    basketData.oldPrice = converter.formatNumber(basketData.price);
     basketData.price = stock.calculate(basketData.price);
+    basketData.price = converter.formatNumber(basketData.price);
     return basketData;
   }
 
