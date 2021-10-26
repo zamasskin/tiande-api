@@ -18,7 +18,7 @@ export class MessageService {
   }
 
   @Cache<ElementItemsModel[]>({ ttl: 60 * 60 })
-  async findLangFieldsByProductId(
+  async findLangFieldsByProductsId(
     productId: number[],
     langId: number,
   ): Promise<ElementItemsModel[]> {

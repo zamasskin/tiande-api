@@ -143,7 +143,7 @@ export class MarketingCampaignService {
           dto.countryId,
           lang.code,
         ),
-        this.messageService.findLangFieldsByProductId(productId, lang.id),
+        this.messageService.findLangFieldsByProductsId(productId, lang.id),
         this.elementService.findUrlsById(productId),
       ]);
     return productId.map((id) => {
