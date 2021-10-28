@@ -48,7 +48,7 @@ export class CurrencyService {
       .where('LID', lang)
       .first();
     const model = await query;
-    return plainToClass(CurrencyLangModel, model);
+    return plainToClass(CurrencyLangModel, model) || new CurrencyLangModel();
   }
 
   numberFormat(
