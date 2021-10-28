@@ -41,15 +41,14 @@ export class CurrencyService {
     };
   }
 
-  @Cache<CurrencyLangModel>({ ttl: 60 * 60 })
+  // @Cache<CurrencyLangModel>({ ttl: 60 * 60 })
   async findModel(lang: string, currency: string): Promise<CurrencyLangModel> {
-    return plainToClass(
-      CurrencyLangModel,
-      await this.qb('b_catalog_currency_lang')
-        .where('CURRENCY', currency)
-        .where('LID', lang)
-        .first(),
-    );
+    const query = this.qb('b_catalog_currency_lang')
+      .where('CURRENCY', currency)
+      .where('LID', lang)
+      .first();
+    const model = await query;
+    return plainToClass(CurrencyLangModel, model);
   }
 
   numberFormat(
