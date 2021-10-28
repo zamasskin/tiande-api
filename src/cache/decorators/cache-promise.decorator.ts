@@ -27,14 +27,18 @@ export function Cache<T>(options?: CacheManagerOptions) {
           .map((a) => JSON.stringify(a))
           .join()}`;
 
-        const cacheData = await cache.get<T>(cacheKey);
-        if (cacheData) {
-          return cacheData;
-        }
+        try {
+          const cacheData = await cache.get<T>(cacheKey);
+          if (cacheData) {
+            return cacheData;
+          }
 
-        const methodResult = await originalMethod.apply(this, args);
-        cache.set<T>(cacheKey, methodResult, options);
-        return methodResult;
+          const methodResult = await originalMethod.apply(this, args);
+          cache.set<T>(cacheKey, methodResult, options);
+          return methodResult;
+        } catch (e) {
+          throw e;
+        }
       }
     };
 
