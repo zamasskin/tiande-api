@@ -4,7 +4,7 @@ import { Expose, Type } from 'class-transformer';
 export class CurrencyLangModel {
   @Type(() => Number)
   @Expose({ name: 'DECIMALS' })
-  decimals: number;
+  decimals = 2;
 
   @Expose({ name: 'DEC_POINT' })
   decPoint = '.';
