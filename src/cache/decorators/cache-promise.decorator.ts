@@ -6,6 +6,7 @@ import {
 import 'reflect-metadata';
 
 type Cacheable<T> = (...args) => Promise<T>;
+const cachePrefix = '_back_api';
 
 export function Cache<T>(options?: CacheManagerOptions) {
   return (
@@ -22,7 +23,7 @@ export function Cache<T>(options?: CacheManagerOptions) {
           'Target Class should inject CacheService',
         );
       } else {
-        const cacheKey = `${className}:${methodName}:${args
+        const cacheKey = `${cachePrefix}:${className}:${methodName}:${args
           .map((a) => JSON.stringify(a))
           .join()}`;
 
