@@ -1,22 +1,27 @@
 import 'reflect-metadata';
-import { Expose, Type } from 'class-transformer';
+import { Expose, Type, Transform } from 'class-transformer';
+import { Default } from 'src/decorators.ts/class-transform.decorators';
 
 export class CurrencyLangModel {
   @Type(() => Number)
   @Expose({ name: 'DECIMALS' })
-  decimals = 2;
+  @Default(2)
+  decimals: number;
 
   @Expose({ name: 'DEC_POINT' })
-  decPoint = '.';
+  @Default('.')
+  decPoint: string;
 
   @Expose({ name: 'THOUSANDS_SEP' })
-  thousandsSep = ' ';
+  @Default(' ')
+  thousandsSep: string;
 
   @Expose({ name: 'HIDE_ZERO' })
   _hideZero: string;
 
   @Expose({ name: 'FORMAT_STRING' })
-  formatString = '#';
+  @Default('#')
+  formatString: string;
 
   get hideZero() {
     return this._hideZero === 'Y';
