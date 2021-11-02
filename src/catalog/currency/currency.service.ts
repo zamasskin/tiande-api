@@ -41,7 +41,7 @@ export class CurrencyService {
     };
   }
 
-  // @Cache<CurrencyLangModel>({ ttl: 60 * 60 })
+  @Cache<CurrencyLangModel>({ ttl: 60 * 60 })
   async findModel(lang: string, currency: string): Promise<CurrencyLangModel> {
     const query = this.qb('b_catalog_currency_lang')
       .where('CURRENCY', currency)
