@@ -25,8 +25,9 @@ export class MarketingCampaignModel {
   @Expose({ name: 'UF_VIDEO' })
   video: string;
 
+  @Type(() => Number)
   @Expose({ name: 'UF_STORIES_ID' })
-  storiesId: string;
+  storiesId: number;
 
   calculate(price: number) {
     return this.discountPercent
