@@ -7,6 +7,7 @@ import { IblockModule } from '../../iblock/iblock.module';
 import { ConfigurationsModule } from '../../configurations/configurations.module';
 import { BasketService } from './basket/basket.service';
 import { BasketModule } from 'src/sale/basket/basket.module';
+import { MainModule } from 'src/main/main.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { BasketModule } from 'src/sale/basket/basket.module';
     IblockModule,
     ConfigurationsModule,
     BasketModule,
+    MainModule,
   ],
   providers: [MarketingCampaignService, BasketService],
   exports: [MarketingCampaignService, BasketService],

@@ -14,6 +14,7 @@ import { MarketingCampaignModel } from './models/marketing-campaign.model';
 import { CurrencyService } from '../../catalog/currency/currency.service';
 import { MarketingCampaignEntity } from './entities/marketing-campaign.entity';
 import { ProductService } from '../../catalog/product/product.service';
+import { UserService } from 'src/main/user/user.service';
 
 @Injectable()
 export class MarketingCampaignService {
@@ -26,11 +27,16 @@ export class MarketingCampaignService {
     private langService: LangService,
     private currencyService: CurrencyService,
     private productService: ProductService,
+    private userService: UserService,
   ) {
     this.qb = configService.get('knex');
   }
   async findList(dto: MarketingCampaignParamsDto) {
     const groups = await this.findGroup(dto.userId);
+    if (dto.userId && dto.moderate) {
+      const moderateGroup = await this.findGroupModerate(dto.userId);
+      groups.push(...moderateGroup);
+    }
     const groupsId = groups.map((g) => g.id);
     const [lang, items] = await Promise.all([
       this.langService.findById(dto.langId),
@@ -182,6 +188,21 @@ export class MarketingCampaignService {
           .orWhereNull('g.UF_DATE_END'),
       )
       .where('g.UF_ACTIVE', 1);
+  }
+
+  //Получаем группы для модерации
+  async findGroupModerate(userId: number) {
+    const isAdmin = await this.userService.checkAdminByUserId(userId);
+    if (!isAdmin) {
+      return [];
+    }
+    const groups = await this.qb('b_marketing_campaign_group').where((qb) =>
+      qb.whereNull('UF_ACTIVE').orWhere('UF_ACTIVE', 0),
+    );
+    return plainToClass<MarketingCampaignGroupModel, Object[]>(
+      MarketingCampaignGroupModel,
+      groups,
+    );
   }
 
   // Получаем список групп
