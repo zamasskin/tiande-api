@@ -58,9 +58,13 @@ export class GiftService {
         },
       };
     });
-    return plainToClass(GiftEntity, result, {
-      excludeExtraneousValues: true,
-    });
+    return plainToClass(
+      GiftEntity,
+      result.filter(({ giftInfo: { used } }) => !used),
+      {
+        excludeExtraneousValues: true,
+      },
+    );
   }
 
   async findGiftOptions(userId: number): Promise<PromotionGiftModel[]> {
