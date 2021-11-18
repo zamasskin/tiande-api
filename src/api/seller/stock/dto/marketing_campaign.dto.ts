@@ -18,4 +18,7 @@ export class GetMarketingCampaignDto implements MarketingCampaignParamsDto {
   @ApiProperty({ required: false, default: 1 })
   @IsInt()
   readonly langId: number = 1;
+
+  @ApiProperty({ required: false, default: false })
+  readonly moderate?: boolean = false;
 }

@@ -1,4 +1,4 @@
-import { IsInt } from 'class-validator';
+import { IsInt, IsBoolean } from 'class-validator';
 
 export class MarketingCampaignParamsDto {
   @IsInt()
@@ -12,4 +12,7 @@ export class MarketingCampaignParamsDto {
 
   @IsInt()
   readonly langId: number = 1;
+
+  @IsBoolean()
+  readonly moderate?: boolean = false;
 }
