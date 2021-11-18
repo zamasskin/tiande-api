@@ -10,6 +10,8 @@ import { MarketingCampaignParamsDto } from '../dto/marketing-campaign-params.dto
 import { MarketingCampaignService } from '../marketing-campaign.service';
 import { MarketingCampaignModel } from '../models/marketing-campaign.model';
 import { MCBasketParamsDto } from './dto/mc-basket-params.dto';
+import { PriceService } from 'src/catalog/price/price.service';
+import { CountryService } from 'src/configurations/country/country.service';
 
 @Injectable()
 export class BasketService {
@@ -21,6 +23,8 @@ export class BasketService {
     private basketService: SaleBasketService,
     private currencyService: CurrencyService,
     private langService: LangService,
+    private priceService: PriceService,
+    private countryService: CountryService,
   ) {
     this.qb = configService.get('knex');
   }
@@ -62,9 +66,11 @@ export class BasketService {
       this.findAvailableStocks(dto),
     ]);
 
+    const lang = await this.langService.findById(dto.langId);
     await Promise.all([
       this.activateCanBay(basketList, stocks),
       this.deactivateCanBay(basketList, stocks),
+      this.updatePrice(basketList, dto.countryId, lang.code),
     ]);
   }
 
@@ -123,5 +129,68 @@ export class BasketService {
       await this.basketService.setCanBayById(false, deactivateId);
     }
     return deactivateId;
+  }
+
+  async updatePrice(
+    basketList: BasketEntity[],
+    countryId: number,
+    langCode: string,
+  ) {
+    const basketStocks = basketList.filter(
+      (basket) => basket.marketingCampaignId > 0,
+    );
+    if (basketStocks.length === 0) {
+      return false;
+    }
+
+    const { currency } = await this.countryService.findById(countryId);
+
+    const productId = basketStocks.map((basket) => basket.productId);
+
+    const [prices, stocks, converter] = await Promise.all([
+      this.priceService.findPricesByOfferIdAndType(
+        productId,
+        countryId,
+        'catalog',
+      ),
+      Promise.all(
+        basketStocks.map((basket) =>
+          this.mcService.getItemById(basket.marketingCampaignId),
+        ),
+      ),
+      this.currencyService.findConverter(langCode, currency),
+    ]);
+
+    const calculate = (stockId: number, price: number) => {
+      const stock = stocks.find((stock) => stock.id === stockId);
+      if (stock) {
+        price = stock.calculate(price);
+        return converter.formatNumber(price);
+      }
+      return converter.formatNumber(price);
+    };
+
+    const getPrice = (productId: number) =>
+      prices.find((price) => price.id === productId)?.price || 0;
+
+    const updateData = [];
+
+    basketStocks.forEach((basket) => {
+      const oldPrice = getPrice(basket.productId);
+      const price = calculate(basket.marketingCampaignId, oldPrice);
+      if (
+        Number(basket.price) !== price ||
+        basket.oldPrice !== oldPrice ||
+        basket.currency !== currency
+      ) {
+        updateData.push(
+          this.qb('b_sale_basket')
+            .where('ID', basket.id)
+            .update({ PRICE: price, PRICE_OLD: oldPrice, CURRENCY: currency }),
+        );
+      }
+    });
+    await Promise.all(updateData);
+    return true;
   }
 }

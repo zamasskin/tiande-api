@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { plainToClass } from 'class-transformer';
-import { Knex } from 'knex';
+import knex, { Knex } from 'knex';
 import * as _ from 'lodash';
 import { CacheService } from '../../cache/cache.service';
 import { Cache } from '../../cache/decorators/cache-promise.decorator';
@@ -146,6 +146,26 @@ export class PriceService {
   // получение цен по программе лояльности
   findPriceLoyaltyByProductsId(productId: number[], countryId: number) {
     return this.findPricesByProductIdAndType(productId, countryId, 'loyalty');
+  }
+
+  async findPricesByOfferIdAndType(
+    productId: number[],
+    countryId: number,
+    type: priceType,
+  ) {
+    const defaultPrices = productId.map((id) =>
+      plainToClass(PriceModel, { id, price: 0 }),
+    );
+    const priceType = await this.findPriceTypeByCountryId(countryId, type);
+    const query = this.qb('b_catalog_price')
+      .whereIn('PRODUCT_ID', productId)
+      .where('CATALOG_GROUP_ID', priceType)
+      .select('PRODUCT_ID as id', 'PRICE as price');
+
+    const prices = (await query).map(({ id, price }) =>
+      plainToClass(PriceModel, { id, price }),
+    );
+    return _.unionBy(prices, defaultPrices, 'id');
   }
 
   @Cache<PriceModel[]>({ ttl: 60 * 60 })
