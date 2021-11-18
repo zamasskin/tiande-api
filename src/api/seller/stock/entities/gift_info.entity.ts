@@ -10,4 +10,10 @@ export class GiftInfo implements GiftInfoEntity {
 
   @ApiProperty()
   dateEnd: Date;
+
+  @ApiProperty()
+  price: number;
+
+  @ApiProperty()
+  priceFormat: string;
 }

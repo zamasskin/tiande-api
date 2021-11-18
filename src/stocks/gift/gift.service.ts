@@ -10,6 +10,7 @@ import { GiftEntity } from './entities/gift.entity';
 import { BasketGiftModel } from './models/basket-gift.model';
 import { PromotionGiftModel } from './models/promotion-gift.model';
 import { LangService } from '../../configurations/lang/lang.service';
+import { CountryService } from 'src/configurations/country/country.service';
 
 @Injectable()
 export class GiftService {
@@ -19,6 +20,7 @@ export class GiftService {
     private marketingCampaignService: MarketingCampaignService,
     private currencyService: CurrencyService,
     private langService: LangService,
+    private countryService: CountryService,
   ) {
     this.qb = configService.get('knex');
   }
@@ -29,11 +31,12 @@ export class GiftService {
       this.findBasketGifts(dto.guestId),
     ]);
 
+    const { currency } = await this.countryService.findById(dto.countryId);
     const lang = await this.langService.findById(dto.langId);
-    const converter = await this.currencyService.findConverter(
-      lang.code,
-      'BAL',
-    );
+    const [converterBal, converterCur] = await Promise.all([
+      this.currencyService.findConverter(lang.code, 'BAL'),
+      this.currencyService.findConverter(lang.code, currency),
+    ]);
 
     if (giftOptions.length === 0) {
       return [];
@@ -44,10 +47,15 @@ export class GiftService {
       const used = !!basketGifts.find((b) => b.giftId === gift.id);
       const product = products.find((p) => p.id === gift.productId);
       product.priceBal = 0;
-      product.priceBalFormat = converter.format(0);
+      product.priceBalFormat = converterBal.format(0);
       return {
         ...product,
-        giftInfo: { ...gift, used },
+        giftInfo: {
+          ...gift,
+          used,
+          price: 0,
+          priceFormat: converterCur.format(0),
+        },
       };
     });
     return plainToClass(GiftEntity, result, {

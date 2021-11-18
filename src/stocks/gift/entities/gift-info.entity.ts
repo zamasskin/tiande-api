@@ -10,4 +10,10 @@ export class GiftInfoEntity {
 
   @Expose()
   dateEnd: Date;
+
+  @Expose()
+  price = 0;
+
+  @Expose()
+  priceFormat = '';
 }
