@@ -40,6 +40,7 @@ export class BasketService {
       userId: dto.userId,
       countryId: dto.countryId,
       langId: 1,
+      moderate: dto.moderate,
     });
     if (!checkStock) {
       throw new Error('check error');

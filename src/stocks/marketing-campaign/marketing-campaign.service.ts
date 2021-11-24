@@ -88,6 +88,10 @@ export class MarketingCampaignService {
 
   async findItems(dto: MarketingCampaignParamsDto) {
     const groups = await this.findGroup(dto.userId);
+    if (dto.userId && dto.moderate) {
+      const moderateGroup = await this.findGroupModerate(dto.userId);
+      groups.push(...moderateGroup);
+    }
     const groupsId = groups.map((g) => g.id);
     return this.findItemsByGroupId(groupsId, dto);
   }

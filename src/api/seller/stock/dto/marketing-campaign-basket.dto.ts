@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt } from 'class-validator';
+import { IsInt, IsBoolean } from 'class-validator';
 
 import { MCBasketParamsDto } from 'src/stocks/marketing-campaign/basket/dto/mc-basket-params.dto';
 
@@ -37,4 +37,8 @@ export class MarketingCampaignBasketDto implements MCBasketParamsDto {
   @ApiProperty({ default: 1, required: false })
   @IsInt()
   quantity: number;
+
+  @IsBoolean()
+  @ApiProperty({ default: false, required: false })
+  moderate: boolean;
 }
