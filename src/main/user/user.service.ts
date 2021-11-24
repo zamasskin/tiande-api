@@ -11,7 +11,8 @@ export class UserService {
   async checkAdminByUserId(userId: number) {
     const result = await this.qb('b_user_group')
       .where('USER_ID', userId)
-      .where('GROUP_ID', 1);
+      .where('GROUP_ID', 1)
+      .first();
     return !!result;
   }
 }
