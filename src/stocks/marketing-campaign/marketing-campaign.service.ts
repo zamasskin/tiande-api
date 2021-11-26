@@ -15,7 +15,7 @@ import { CurrencyService } from '../../catalog/currency/currency.service';
 import { MarketingCampaignEntity } from './entities/marketing-campaign.entity';
 import { ProductService } from '../../catalog/product/product.service';
 import { UserService } from 'src/main/user/user.service';
-// проверка jenkins1
+
 @Injectable()
 export class MarketingCampaignService {
   qb: Knex;
