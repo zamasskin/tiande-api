@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Client } from 'soap';
 import * as soap from 'soap';
-import _ from 'lodash';
+import * as _ from 'lodash';
 
 @Injectable()
 export class ClientService {
