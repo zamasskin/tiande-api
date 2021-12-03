@@ -10,6 +10,7 @@ import { CacheModule } from './cache/cache.module';
 import { StocksModule } from './stocks/stocks.module';
 import { SaleModule } from './sale/sale.module';
 import { MainModule } from './main/main.module';
+import { ServicesModule } from './services/services.module';
 import configuration from './config/configuration';
 
 @Module({
@@ -25,6 +26,7 @@ import configuration from './config/configuration';
     StocksModule,
     SaleModule,
     MainModule,
+    ServicesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
