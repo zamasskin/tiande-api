@@ -1,13 +1,21 @@
 import { Injectable } from '@nestjs/common';
-import soap, { Client } from 'soap';
+import { Client } from 'soap';
+import * as soap from 'soap';
 import _ from 'lodash';
 
 @Injectable()
 export class ClientService {
   async findMethods(wsdlUrl: string) {
-    const client = await soap.createClientAsync(wsdlUrl);
-    const description = this.getDescription(client);
-    return Object.keys(description);
+    try {
+      const client = await soap.createClientAsync(wsdlUrl);
+      const description = this.getDescription(client);
+      return Object.keys(description);
+    } catch (e) {
+      return {
+        statusCode: 500,
+        message: e.message,
+      };
+    }
   }
 
   async findInput(wsdlUrl: string, method: string) {
