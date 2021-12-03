@@ -14,9 +14,29 @@ export class ClientService {
     const client = await soap.createClientAsync(wsdlUrl);
     const description = this.getDescription(client);
     if (method in description && 'input' in description[method]) {
-      return description[method].input;
+      const inputs = description[method].input;
+      return this.parseInput(inputs);
     }
     return false;
+  }
+
+  parseInput(input: any) {
+    const excludeProps = ['targetNSAlias', 'targetNamespace'];
+    const matchArr = /\[\]$/;
+    if (input && typeof input === 'object') {
+      const newInput = {};
+      for (const key in input) {
+        if (excludeProps.includes(key)) continue;
+        const value = input[key];
+        const newValue =
+          value && typeof value === 'object' ? this.parseInput(value) : value;
+        newInput[key.replace(matchArr, '')] = matchArr.test(key)
+          ? [newValue]
+          : newValue;
+      }
+      return newInput;
+    }
+    return input;
   }
 
   async callMethod(wsdlUrl: string, method: string, input: any) {
