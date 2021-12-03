@@ -13,6 +13,5 @@ export class ClientController {
   @Post('input')
   findInput(@Body('wsdl') wsdl, @Body('method') method) {
     return this.clientService.findInput(wsdl, method);
-    //this.clientService.findMethods(wsdl);
   }
 }
