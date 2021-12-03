@@ -55,19 +55,22 @@ export class ClientService {
   }
 
   async callMethod(wsdlUrl: string, method: string, input: any) {
-    const client = await soap.createClientAsync(wsdlUrl);
-    const methodName = method + 'Async';
-    if (methodName in client) {
-      const fn = client[methodName];
-      const result = await fn.call(null, input);
-      const [response, _, error] = result;
-      return { response, error };
+    try {
+      const client = await soap.createClientAsync(wsdlUrl);
+      const methodName = method + 'Async';
+      if (methodName in client) {
+        const fn = client[methodName];
+        const result = await fn.call(null, input);
+        const [response, _, error] = result;
+        return { response, error };
+      }
+      throw new Error('Invalid input data');
+    } catch (e) {
+      return {
+        statusCode: 500,
+        message: e.message,
+      };
     }
-
-    return {
-      response: false,
-      error: 'Invalid input data',
-    };
   }
 
   getDescription(client: Client) {

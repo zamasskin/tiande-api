@@ -14,4 +14,9 @@ export class ClientController {
   findInput(@Body('wsdl') wsdl, @Body('method') method) {
     return this.clientService.findInput(wsdl, method);
   }
+
+  @Post('call')
+  callMethod(@Body('wsdl') wsdl, @Body('method') method, @Body('input') input) {
+    return this.clientService.callMethod(wsdl, method, input);
+  }
 }
