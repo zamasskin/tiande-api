@@ -19,13 +19,20 @@ export class ClientService {
   }
 
   async findInput(wsdlUrl: string, method: string) {
-    const client = await soap.createClientAsync(wsdlUrl);
-    const description = this.getDescription(client);
-    if (method in description && 'input' in description[method]) {
-      const inputs = description[method].input;
-      return this.parseInput(inputs);
+    try {
+      const client = await soap.createClientAsync(wsdlUrl);
+      const description = this.getDescription(client);
+      if (method in description && 'input' in description[method]) {
+        const inputs = description[method].input;
+        return this.parseInput(inputs);
+      }
+      throw new Error('method not found');
+    } catch (e) {
+      return {
+        statusCode: 500,
+        message: e.message,
+      };
     }
-    return false;
   }
 
   parseInput(input: any) {
