@@ -29,6 +29,10 @@ export class PromoCodeService {
     return plainToClass<CashbackEntity, Object[]>(CashbackEntity, await query);
   }
 
+  async findStockId(dto: PromoCodeDto) {
+    const data = await this.findCashback(dto);
+    return data.map((cashback) => cashback.stockId);
+  }
   async checkStock(stockId: number, dto: PromoCodeDto) {
     const data = await this.findCashback(dto);
     return !!data.find((cashback) => cashback.stockId === stockId);
