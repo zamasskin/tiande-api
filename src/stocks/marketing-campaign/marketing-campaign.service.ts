@@ -88,10 +88,10 @@ export class MarketingCampaignService {
     return this.findItemsRawByGroupId(groupsId, dto);
   }
 
-  async findItemsRawById(id: number, langId = 1) {
+  async findItemsRawById(id: number[], langId = 1) {
     const lang = await this.langService.findById(langId);
     const query = this.getItemsQuery()
-      .where('mc.ID', id)
+      .whereIn('mc.ID', id)
       .select(
         '*',
         `mc.UF_DESCRIPTION_${lang.code.toUpperCase()} as UF_DESCRIPTION`,
