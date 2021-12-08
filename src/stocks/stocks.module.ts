@@ -10,6 +10,7 @@ import { IblockModule } from 'src/iblock/iblock.module';
 import { ConfigurationsModule } from 'src/configurations/configurations.module';
 import { BasketModule } from 'src/sale/basket/basket.module';
 import { MainModule } from 'src/main/main.module';
+import { PromoCodeService } from './promocode/promocode.service';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { MainModule } from 'src/main/main.module';
     MarketingCampaignService,
     MCBasketService,
     GiftService,
+    PromoCodeService,
   ],
 })
 export class StocksModule {}

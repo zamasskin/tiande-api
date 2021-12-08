@@ -15,6 +15,7 @@ import { CurrencyService } from '../../catalog/currency/currency.service';
 import { MarketingCampaignEntity } from './entities/marketing-campaign.entity';
 import { ProductService } from '../../catalog/product/product.service';
 import { UserService } from 'src/main/user/user.service';
+import { PromoCodeService } from '../promocode/promocode.service';
 
 @Injectable()
 export class MarketingCampaignService {
@@ -28,6 +29,7 @@ export class MarketingCampaignService {
     private currencyService: CurrencyService,
     private productService: ProductService,
     private userService: UserService,
+    private promoCodeService: PromoCodeService,
   ) {
     this.qb = configService.get('knex');
   }
@@ -319,6 +321,8 @@ export class MarketingCampaignService {
   }
 
   async check(stockId: number, dto: MarketingCampaignParamsDto) {
+    const checkPromo = await this.promoCodeService.checkStock(stockId, dto);
+    if (checkPromo) return true;
     const stocks = await this.findItems(dto);
     const stocksId = stocks.map((stock) => stock.id);
     return stocksId.includes(stockId);
