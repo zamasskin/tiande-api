@@ -5,7 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { CatalogModule } from '../../catalog/catalog.module';
 import { IblockModule } from '../../iblock/iblock.module';
 import { ConfigurationsModule } from '../../configurations/configurations.module';
-import { BasketService } from './basket/basket.service';
+import { MCBasketService } from './basket/basket.service';
 import { BasketModule } from 'src/sale/basket/basket.module';
 import { MainModule } from 'src/main/main.module';
 
@@ -20,7 +20,7 @@ import { MainModule } from 'src/main/main.module';
     BasketModule,
     MainModule,
   ],
-  providers: [MarketingCampaignService, BasketService],
-  exports: [MarketingCampaignService, BasketService],
+  providers: [MarketingCampaignService, MCBasketService],
+  exports: [MarketingCampaignService, MCBasketService],
 })
 export class MarketingCampaignModule {}

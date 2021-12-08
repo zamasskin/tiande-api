@@ -14,7 +14,7 @@ import { PriceService } from 'src/catalog/price/price.service';
 import { CountryService } from 'src/configurations/country/country.service';
 
 @Injectable()
-export class BasketService {
+export class MCBasketService {
   qb: Knex;
   constructor(
     configService: ConfigService,
