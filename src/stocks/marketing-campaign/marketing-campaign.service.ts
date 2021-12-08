@@ -104,6 +104,12 @@ export class MarketingCampaignService {
     );
   }
 
+  async findActionByCashback(dto: MarketingCampaignParamsDto) {
+    const stockId = await this.promoCodeService.findStockId(dto);
+    if (stockId.length === 0) return [];
+    return this.findItemsRawById(stockId);
+  }
+
   async findItems(dto: MarketingCampaignParamsDto) {
     const groups = await this.findGroup(dto.userId);
     if (dto.userId && dto.moderate) {
