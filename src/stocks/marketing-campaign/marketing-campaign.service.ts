@@ -88,6 +88,22 @@ export class MarketingCampaignService {
     return this.findItemsRawByGroupId(groupsId, dto);
   }
 
+  async findItemsRawById(id: number, langId = 1) {
+    const lang = await this.langService.findById(langId);
+    const query = this.getItemsQuery()
+      .where('mc.ID', id)
+      .select(
+        '*',
+        `mc.UF_DESCRIPTION_${lang.code.toUpperCase()} as UF_DESCRIPTION`,
+        'p.VALUE as PRODUCT_ID',
+      )
+      .groupBy('p.VALUE');
+    return plainToClass<MarketingCampaignModel, Object[]>(
+      MarketingCampaignModel,
+      await query,
+    );
+  }
+
   async findItems(dto: MarketingCampaignParamsDto) {
     const groups = await this.findGroup(dto.userId);
     if (dto.userId && dto.moderate) {
