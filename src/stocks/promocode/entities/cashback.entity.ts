@@ -31,17 +31,17 @@ export class CashbackEntity {
 
   @Expose({ name: 'UF_OWNER_BONUS' })
   @Type(() => Number)
-  ownerBonus: Number;
+  ownerBonus: number;
 
   @Expose({ name: 'UF_MIN_ORDER_PRICE' })
   @Type(() => Number)
-  minOrderPrice: Number;
+  minOrderPrice: number;
 
   @Expose({ name: 'UF_FIX_CASHBACK' })
   @Type(() => Number)
-  fixCashback: Number;
+  fixCashback: number;
 
   @Expose({ name: 'UF_STOCK_ID' })
   @Type(() => Number)
-  stockId: Number;
+  stockId: number;
 }
