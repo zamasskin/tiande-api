@@ -51,7 +51,12 @@ export class MCBasketService {
   }
 
   async findAvailableStocks(dto: MarketingCampaignParamsDto) {
-    const stocks = await this.mcService.findItemsRaw(dto);
+    const [stocks, cashbackStocks] = await Promise.all([
+      this.mcService.findItemsRaw(dto),
+      this.mcService.findItemsByCashback(dto),
+    ]);
+    // TODO: Если не нужно проверять по заказам то перенесем ниже
+    stocks.push(...cashbackStocks);
     const stocksId = stocks.map((stock) => stock.id);
     const orderStocks =
       await this.mcService.findBasketOrderByMarketingCampaignId(
