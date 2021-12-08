@@ -104,7 +104,7 @@ export class MarketingCampaignService {
     );
   }
 
-  async findActionByCashback(dto: MarketingCampaignParamsDto) {
+  async findItemsByCashback(dto: MarketingCampaignParamsDto) {
     const stockId = await this.promoCodeService.findStockId(dto);
     if (stockId.length === 0) return [];
     return this.findItemsRawById(stockId);
