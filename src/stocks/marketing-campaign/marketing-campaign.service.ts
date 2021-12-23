@@ -65,9 +65,20 @@ export class MarketingCampaignService {
         },
       };
     });
-    return plainToClass(MarketingCampaignEntity, mcItems, {
+    const stocks = plainToClass(MarketingCampaignEntity, mcItems, {
       excludeExtraneousValues: true,
     });
+    stocks.sort(this.sortPrice);
+    return stocks;
+  }
+
+  sortPrice(old: MarketingCampaignEntity, current: MarketingCampaignEntity) {
+    const a = old.stockInfo.price,
+      b = current.stockInfo.price;
+    if (a === b) {
+      return 0;
+    }
+    return a > b ? 1 : -1;
   }
 
   getItemsQuery() {
