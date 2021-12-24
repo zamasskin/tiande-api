@@ -168,7 +168,7 @@ export class MCBasketService {
     ]);
 
     const calculate = (stockId: number, price: number) => {
-      const stock = stocks.find((stock) => stock.id === stockId);
+      const stock = stocks.find((stock) => stock?.id === stockId);
       if (stock) {
         price = stock.calculate(price);
         return converter.formatNumber(price);
