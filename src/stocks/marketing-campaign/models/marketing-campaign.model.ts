@@ -30,8 +30,9 @@ export class MarketingCampaignModel {
   storiesId: number;
 
   calculate(price: number) {
+    const discountPercent = this.discount > 100 ? 100 : this.discount;
     return this.discountPercent
-      ? (price * this.discount) / 100
+      ? (1 - discountPercent / 100) * price
       : price - this.discount;
   }
 
