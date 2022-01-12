@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Knex } from 'knex';
@@ -84,6 +85,25 @@ export class MCBasketService {
     };
     const results = await Promise.all(items.map((item) => addBasket(item.id)));
     return !!results.find((add) => !!add);
+  }
+
+  async findAvailableStocksV2(dto: MarketingCampaignParamsDto) {
+    const promoCodes = await this.basketService.findPromoCodes(dto.guestId);
+    const promises = [
+      this.mcService.findItemsRaw(dto),
+      this.mcService.findItemsByCashback(dto),
+      ...promoCodes.map((promoCode) =>
+        this.mcService.findItemsRawByPromoCode(dto, promoCode),
+      ),
+    ];
+    const stocks = _.flatten(await Promise.all(promises));
+    const stocksId = stocks.map((stock) => stock.id);
+    const orderStocks =
+      await this.mcService.findBasketOrderByMarketingCampaignId(
+        dto.userId,
+        stocksId,
+      );
+    return stocks.filter((stock) => !orderStocks.includes(stock.id));
   }
 
   async findAvailableStocks(dto: MarketingCampaignParamsDto) {
