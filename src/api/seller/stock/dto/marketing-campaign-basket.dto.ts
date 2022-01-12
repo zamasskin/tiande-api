@@ -77,7 +77,7 @@ export class MarketingCampaignBasketCodeParamsDto
   @ApiProperty()
   promoCode: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: [MarketingCampaignBasketItems] })
   basketItems: MarketingCampaignBasketItems[];
 
   @ApiProperty({ default: 134, required: false })
