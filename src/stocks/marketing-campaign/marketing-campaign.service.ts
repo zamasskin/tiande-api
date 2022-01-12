@@ -81,13 +81,22 @@ export class MarketingCampaignService {
     return a > b ? 1 : -1;
   }
 
-  async findItemsRawByPromoCode(
+  async findItemsByPromoCode(
     dto: MarketingCampaignParamsDto,
     promoCode: string,
   ) {
     const groups = await this.findGroup(dto.userId, promoCode);
     const groupsId = groups.map((g) => g.id);
     return this.findItemsByGroupId(groupsId, dto);
+  }
+
+  async findItemsRawByPromoCode(
+    dto: MarketingCampaignParamsDto,
+    promoCode: string,
+  ) {
+    const groups = await this.findGroup(dto.userId, promoCode);
+    const groupsId = groups.map((g) => g.id);
+    return this.findItemsRawByGroupId(groupsId, dto);
   }
 
   getItemsQuery() {

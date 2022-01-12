@@ -64,7 +64,7 @@ export class MCBasketService {
       langId: 1,
       moderate: dto.moderate,
     };
-    const items = await this.mcService.findItemsRawByPromoCode(
+    const items = await this.mcService.findItemsByPromoCode(
       mcDto,
       dto.promoCode,
     );
