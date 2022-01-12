@@ -40,6 +40,17 @@ export class BasketService {
     );
   }
 
+  async findPromoCodes(guestId: number): Promise<string[]> {
+    const basketList = plainToClass<BasketEntity, Object[]>(
+      BasketEntity,
+      await this.basketQueryByGuestId(guestId)
+        .whereNotNull('DISCOUNT_COUPON')
+        .where('DISCOUNT_COUPON', '<>', '')
+        .groupBy('DISCOUNT_COUPON'),
+    );
+    return basketList.map((basket) => basket.coupon);
+  }
+
   async findSaveData(dto: BasketDto) {
     const productId = await this.productService.findProductByOfferId(
       dto.offerId,
