@@ -74,7 +74,7 @@ export class MCBasketService {
     }
 
     const addBasket = async (stockId: number) => {
-      const basketDto = { ...dto, stockId };
+      const basketDto = { ...dto, stockId, offerId: 0, sku: {}, quantity: 1 };
       const checkBasket = await this.checkBasket(basketDto);
       if (!checkBasket) {
         return false;

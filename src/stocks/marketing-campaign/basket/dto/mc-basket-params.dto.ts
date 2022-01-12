@@ -12,7 +12,10 @@ export class MCBasketParamsDto extends BasketDto {
   moderate: boolean;
 }
 
-export class MCBasketPromoCodeParamsDto extends BasketDto {
+export class MCBasketPromoCodeParamsDto {
+  @IsInt()
+  readonly guestId: number;
+
   @IsInt()
   readonly userId: number;
 
@@ -21,4 +24,15 @@ export class MCBasketPromoCodeParamsDto extends BasketDto {
 
   @IsString()
   promoCode: string;
+
+  @IsInt()
+  readonly quantity: number;
+
+  @IsInt()
+  readonly countryId: number = 134;
+
+  @IsInt()
+  readonly langId: number;
+
+  currency: string;
 }
