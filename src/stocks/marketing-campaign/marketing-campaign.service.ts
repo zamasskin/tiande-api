@@ -214,8 +214,8 @@ export class MarketingCampaignService {
   }
 
   // Запрос без доп фильтров для получения групп
-  groupQuery(): Knex.QueryBuilder {
-    return this.qb({ g: 'b_marketing_campaign_group' })
+  groupQuery(promoCode: string | false = false): Knex.QueryBuilder {
+    let query = this.qb({ g: 'b_marketing_campaign_group' })
       .where((qb) =>
         qb
           .where('g.UF_DATE_START', '<=', new Date())
@@ -227,6 +227,14 @@ export class MarketingCampaignService {
           .orWhereNull('g.UF_DATE_END'),
       )
       .where('g.UF_ACTIVE', 1);
+    if (promoCode) {
+      query = query.where('UF_PROMO_CODE', promoCode);
+    } else {
+      query = query.where((qb) =>
+        qb.whereNull('UF_PROMO_CODE').orWhere('UF_PROMO_CODE', ''),
+      );
+    }
+    return query;
   }
 
   //Получаем группы для модерации
@@ -245,24 +253,32 @@ export class MarketingCampaignService {
   }
 
   // Получаем список групп
-  async findGroup(userId: number): Promise<MarketingCampaignGroupModel[]> {
-    return userId ? this.findGroupByUser(userId) : this.findGroupByGuest();
+  async findGroup(
+    userId: number,
+    promoCode: string | false = false,
+  ): Promise<MarketingCampaignGroupModel[]> {
+    return userId
+      ? this.findGroupByUser(userId, promoCode)
+      : this.findGroupByGuest(promoCode);
   }
 
   // Отдаем группы для не зарегистрированного пользователя
-  async findGroupByGuest(): Promise<MarketingCampaignGroupModel[]> {
+  async findGroupByGuest(
+    promoCode: string | false = false,
+  ): Promise<MarketingCampaignGroupModel[]> {
     return plainToClass<MarketingCampaignGroupModel, Object[]>(
       MarketingCampaignGroupModel,
-      await this.groupQuery(),
+      await this.groupQuery(promoCode),
     );
   }
 
   // Отдаем группы для зарегистрированного пользователя с доп проверками
   async findGroupByUser(
     userId: number,
+    promoCode: string | false = false,
   ): Promise<MarketingCampaignGroupModel[]> {
     const dateRegister = await this.findDateRegister(userId);
-    const queryBuilder = this.groupQuery();
+    const queryBuilder = this.groupQuery(promoCode);
     const groups = await queryBuilder
       .where((qb) =>
         qb
@@ -274,6 +290,7 @@ export class MarketingCampaignService {
           .whereNull('g.UF_REGISTER_END')
           .orWhere('g.UF_REGISTER_END', '>=', dateRegister),
       );
+
     return plainToClass<MarketingCampaignGroupModel, Object[]>(
       MarketingCampaignGroupModel,
       groups,
