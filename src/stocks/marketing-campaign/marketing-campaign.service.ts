@@ -88,6 +88,11 @@ export class MarketingCampaignService {
     return a > b ? 1 : -1;
   }
 
+  async findByPromoCode(dto: MarketingCampaignParamsDto, promoCode: string) {
+    const groups = await this.findGroup(dto.userId, promoCode);
+    return this.findListByGroup(groups, dto);
+  }
+
   async findItemsByPromoCode(
     dto: MarketingCampaignParamsDto,
     promoCode: string,

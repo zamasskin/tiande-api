@@ -22,3 +22,8 @@ export class GetMarketingCampaignDto implements MarketingCampaignParamsDto {
   @ApiProperty({ required: false, default: false })
   readonly moderate?: boolean = false;
 }
+
+export class GetMarketingCampaignDtoByPromoCode extends GetMarketingCampaignDto {
+  @ApiProperty()
+  promoCode: string;
+}

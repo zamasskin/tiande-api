@@ -26,6 +26,13 @@ export class StocksService {
     return items;
   }
 
+  async findMarketingCampaignListByPromoCode(
+    dto: MarketingCampaignParamsDto,
+    promoCode: string,
+  ) {
+    return this.marketingCampaignService.findByPromoCode(dto, promoCode);
+  }
+
   marketingCampaignAddBasket(dto: MCBasketParamsDto) {
     return this.mcBasketService.add(dto);
   }
