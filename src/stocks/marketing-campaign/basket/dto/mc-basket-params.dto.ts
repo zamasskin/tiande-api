@@ -12,6 +12,15 @@ export class MCBasketParamsDto extends BasketDto {
   moderate: boolean;
 }
 
+export class MCBasketItems {
+  @IsInt()
+  readonly offerId: number;
+
+  readonly sku: { [key: string]: string };
+
+  @IsInt()
+  readonly stockId: number;
+}
 export class MCBasketPromoCodeParamsDto {
   @IsInt()
   readonly guestId: number;
@@ -25,8 +34,7 @@ export class MCBasketPromoCodeParamsDto {
   @IsString()
   promoCode: string;
 
-  @IsInt()
-  readonly quantity: number;
+  basketItems: MCBasketItems[];
 
   @IsInt()
   readonly countryId: number = 134;
