@@ -20,7 +20,10 @@ import { Gift } from './entities/gift.entity';
 import { MarketingCampaign } from './entities/marketing_campaign.entity';
 import { SellerGuard } from '../seller.guard';
 import { StockList } from './entities/stock_list.entity';
-import { MarketingCampaignBasketDto } from './dto/marketing-campaign-basket.dto';
+import {
+  MarketingCampaignBasketCodeParamsDto,
+  MarketingCampaignBasketDto,
+} from './dto/marketing-campaign-basket.dto';
 
 @ApiTags('Seller')
 @ApiBearerAuth()
@@ -72,6 +75,16 @@ export class StockController {
     } catch (e) {
       throw new HttpException(e.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+  }
+
+  @Post('/marketing-campaign/add-basket-by-promocode')
+  @ApiOperation({ summary: 'Set basket by promoCode' })
+  @ApiOkResponse({ type: Boolean })
+  @ApiForbiddenResponse({ status: 403, description: 'Forbidden.' })
+  async addMarketingCampaignByPromoCode(
+    @Body() dto: MarketingCampaignBasketCodeParamsDto,
+  ) {
+    return this.stockService.marketingCampaignAddBasketByPromoCode(dto);
   }
 
   @Post('/marketing-campaign/check-basket')
