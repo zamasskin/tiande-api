@@ -65,25 +65,33 @@ export class MCBasketService {
       langId: 1,
       moderate: dto.moderate,
     };
-    const items = await this.mcService.findItemsByPromoCode(
+    const stocks = await this.mcService.findItemsByPromoCode(
       mcDto,
       dto.promoCode,
     );
-    if (items.length === 0) {
+    if (stocks.length === 0) {
       return false;
     }
+    const stockId = stocks.map((stock) => stock.id);
+    const basketItems = dto.basketItems.filter((bi) =>
+      stockId.includes(Number(bi.stockId)),
+    );
 
-    const addBasket = async (stockId: number) => {
-      const basketDto = { ...dto, stockId, offerId: 0, sku: {}, quantity: 1 };
-      const checkBasket = await this.checkBasket(basketDto);
-      if (!checkBasket) {
-        return false;
-      }
-      const saveData = await this.findSaveData(basketDto);
-      saveData.coupon = dto.promoCode;
-      return this.basketService.save(saveData);
-    };
-    const results = await Promise.all(items.map((item) => addBasket(item.id)));
+    if (basketItems.length === 0) {
+      return false;
+    }
+    const results = await Promise.all(
+      basketItems.map(async (bi) => {
+        const basketDto = { ...dto, ...bi, quantity: 1 };
+        const checkBasket = await this.checkBasket(basketDto);
+        if (!checkBasket) {
+          return false;
+        }
+        const saveData = await this.findSaveData(basketDto);
+        saveData.coupon = dto.promoCode;
+        return this.basketService.save(saveData);
+      }),
+    );
     return !!results.find((add) => !!add);
   }
 
