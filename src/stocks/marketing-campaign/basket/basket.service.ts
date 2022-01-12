@@ -9,7 +9,10 @@ import { BasketEntity } from 'src/sale/basket/entities/basket.entity';
 import { MarketingCampaignParamsDto } from '../dto/marketing-campaign-params.dto';
 import { MarketingCampaignService } from '../marketing-campaign.service';
 import { MarketingCampaignModel } from '../models/marketing-campaign.model';
-import { MCBasketParamsDto } from './dto/mc-basket-params.dto';
+import {
+  MCBasketParamsDto,
+  MCBasketPromoCodeParamsDto,
+} from './dto/mc-basket-params.dto';
 import { PriceService } from 'src/catalog/price/price.service';
 import { CountryService } from 'src/configurations/country/country.service';
 
@@ -48,6 +51,39 @@ export class MCBasketService {
 
     const saveData = await this.findSaveData(dto);
     return this.basketService.save(saveData);
+  }
+
+  async addByPromoCode(dto: MCBasketPromoCodeParamsDto) {
+    if (!dto.userId) {
+      return false;
+    }
+    const mcDto = {
+      guestId: dto.guestId,
+      userId: dto.userId,
+      countryId: dto.countryId,
+      langId: 1,
+      moderate: dto.moderate,
+    };
+    const items = await this.mcService.findItemsRawByPromoCode(
+      mcDto,
+      dto.promoCode,
+    );
+    if (items.length === 0) {
+      return false;
+    }
+
+    const addBasket = async (stockId: number) => {
+      const basketDto = { ...dto, stockId };
+      const checkBasket = await this.checkBasket(basketDto);
+      if (!checkBasket) {
+        return false;
+      }
+      const saveData = await this.findSaveData(basketDto);
+      saveData.coupon = dto.promoCode;
+      return this.basketService.save(saveData);
+    };
+    const results = await Promise.all(items.map((item) => addBasket(item.id)));
+    return !!results.find((add) => !!add);
   }
 
   async findAvailableStocks(dto: MarketingCampaignParamsDto) {

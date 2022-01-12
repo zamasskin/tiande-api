@@ -1,4 +1,4 @@
-import { IsInt, IsBoolean } from 'class-validator';
+import { IsInt, IsBoolean, IsString } from 'class-validator';
 import { BasketDto } from 'src/sale/basket/dto/basket.dto';
 
 export class MCBasketParamsDto extends BasketDto {
@@ -10,4 +10,15 @@ export class MCBasketParamsDto extends BasketDto {
 
   @IsBoolean()
   moderate: boolean;
+}
+
+export class MCBasketPromoCodeParamsDto extends BasketDto {
+  @IsInt()
+  readonly userId: number;
+
+  @IsBoolean()
+  moderate: boolean;
+
+  @IsString()
+  promoCode: string;
 }
