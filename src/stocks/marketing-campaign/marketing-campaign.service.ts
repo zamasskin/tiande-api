@@ -39,6 +39,13 @@ export class MarketingCampaignService {
       const moderateGroup = await this.findGroupModerate(dto.userId);
       groups.push(...moderateGroup);
     }
+    return this.findListByGroup(groups, dto);
+  }
+
+  async findListByGroup(
+    groups: MarketingCampaignGroupModel[],
+    dto: MarketingCampaignParamsDto,
+  ) {
     const groupsId = groups.map((g) => g.id);
     const [lang, items] = await Promise.all([
       this.langService.findById(dto.langId),
