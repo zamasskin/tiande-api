@@ -133,7 +133,7 @@ export class MCBasketService {
   async checkAndUpdate(dto: MarketingCampaignParamsDto): Promise<void> {
     const [basketList, stocks] = await Promise.all([
       this.basketService.findBasketRaw(dto.guestId),
-      this.findAvailableStocks(dto),
+      this.findAvailableStocksV2(dto),
     ]);
 
     const lang = await this.langService.findById(dto.langId);
