@@ -273,9 +273,11 @@ export class MarketingCampaignService {
     if (!isAdmin) {
       return [];
     }
-    const groups = await this.qb('b_marketing_campaign_group').where((qb) =>
-      qb.whereNull('UF_ACTIVE').orWhere('UF_ACTIVE', 0),
-    );
+    const groups = await this.qb('b_marketing_campaign_group')
+      .where((qb) => qb.whereNull('UF_ACTIVE').orWhere('UF_ACTIVE', 0))
+      .where((qb) =>
+        qb.whereNull('UF_PROMO_CODE').orWhere('UF_PROMO_CODE', ''),
+      );
     return plainToClass<MarketingCampaignGroupModel, Object[]>(
       MarketingCampaignGroupModel,
       groups,
