@@ -131,49 +131,45 @@ export class MCBasketService {
   }
 
   async deleteNotActive(dto: MarketingCampaignParamsDto) {
-    if (dto.userId === 1045032) {
-      const [activeGroups, activeGroupsByPromoCode] = await Promise.all([
-        this.mcService.findGroup(dto.userId),
-        this.mcService
-          .groupQueryRaw()
-          .where((qb) =>
-            qb.whereNotNull('UF_PROMO_CODE').where('UF_PROMO_CODE', '<>', ''),
-          )
-          .select('ID as id'),
-      ]);
-      const activeGroupsId = activeGroups.map(({ id }) => id);
-      const activeGroupsByPromoCodeId = activeGroupsByPromoCode.map(({ id }) =>
-        Number(id),
+    const [activeGroups, activeGroupsByPromoCode] = await Promise.all([
+      this.mcService.findGroup(dto.userId),
+      this.mcService
+        .groupQueryRaw()
+        .where((qb) =>
+          qb.whereNotNull('UF_PROMO_CODE').where('UF_PROMO_CODE', '<>', ''),
+        )
+        .select('ID as id'),
+    ]);
+    const activeGroupsId = activeGroups.map(({ id }) => id);
+    const activeGroupsByPromoCodeId = activeGroupsByPromoCode.map(({ id }) =>
+      Number(id),
+    );
+    const id = _.chain([activeGroupsId, activeGroupsByPromoCodeId])
+      .flatten()
+      .uniq()
+      .value();
+
+    const mcItemQuery = this.mcService
+      .getItemTable()
+      .select('ID')
+      .whereIn(
+        'ID',
+        this.basketService
+          .basketQueryByGuestId(dto.guestId)
+          .select('MARKETING_CAMPAIGN_ID'),
       );
-      const id = _.chain([activeGroupsId, activeGroupsByPromoCodeId])
-        .flatten()
-        .uniq()
-        .value();
 
-      const mcItemQuery = this.mcService
-        .getItemTable()
-        .select('ID')
-        .whereIn(
-          'ID',
-          this.basketService
-            .basketQueryByGuestId(dto.guestId)
-            .select('MARKETING_CAMPAIGN_ID'),
-        );
-
-      if (id.length > 0) {
-        mcItemQuery.whereNotIn('UF_GROUP_ID', id);
-      }
-      const deleteBasket = await this.basketService
-        .basketQueryByGuestId(dto.guestId)
-        .whereIn('MARKETING_CAMPAIGN_ID', mcItemQuery)
-        .select('id');
-      if (deleteBasket.length > 0) {
-        const id = deleteBasket
-          .map(({ id }) => Number(id))
-          .filter((id) => !!id);
-        await this.basketService.getTable().whereIn('ID', id).delete();
-        return true;
-      }
+    if (id.length > 0) {
+      mcItemQuery.whereNotIn('UF_GROUP_ID', id);
+    }
+    const deleteBasket = await this.basketService
+      .basketQueryByGuestId(dto.guestId)
+      .whereIn('MARKETING_CAMPAIGN_ID', mcItemQuery)
+      .select('id');
+    if (deleteBasket.length > 0) {
+      const id = deleteBasket.map(({ id }) => Number(id)).filter((id) => !!id);
+      await this.basketService.getTable().whereIn('ID', id).delete();
+      return true;
     }
     return false;
   }
