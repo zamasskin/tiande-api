@@ -33,6 +33,10 @@ export class BasketService {
       .whereNull('ORDER_ID');
   }
 
+  getTable() {
+    return this.qb('b_sale_basket');
+  }
+
   async findBasketRaw(guestId: number) {
     return plainToClass<BasketEntity, Object[]>(
       BasketEntity,

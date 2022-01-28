@@ -111,6 +111,10 @@ export class MarketingCampaignService {
     return this.findItemsRawByGroupId(groupsId, dto);
   }
 
+  getItemTable() {
+    return this.qb('b_marketing_campaign');
+  }
+
   getItemsQuery() {
     return this.qb({ mc: 'b_marketing_campaign' })
       .leftJoin({ c: 'b_marketing_campaign_uf_country' }, 'c.ID', 'mc.ID')
@@ -243,9 +247,8 @@ export class MarketingCampaignService {
     });
   }
 
-  // Запрос без доп фильтров для получения групп
-  groupQuery(promoCode: string | false = false): Knex.QueryBuilder {
-    let query = this.qb({ g: 'b_marketing_campaign_group' })
+  groupQueryRaw() {
+    return this.qb({ g: 'b_marketing_campaign_group' })
       .where((qb) =>
         qb
           .where('g.UF_DATE_START', '<=', new Date())
@@ -257,6 +260,10 @@ export class MarketingCampaignService {
           .orWhereNull('g.UF_DATE_END'),
       )
       .where('g.UF_ACTIVE', 1);
+  }
+  // Запрос без доп фильтров для получения групп
+  groupQuery(promoCode: string | false = false): Knex.QueryBuilder {
+    let query = this.groupQueryRaw();
     if (promoCode) {
       query = query.where('UF_PROMO_CODE', promoCode);
     } else {
