@@ -33,6 +33,7 @@
     "cache-manager-redis-store": "^2.0.0",
     "class-transformer": "^0.4.0",
     "class-validator": "^0.13.1",
+    "html-entities": "^2.3.3",
     "knex": "^0.95.11",
     "lodash": "^4.17.21",
     "moment": "^2.29.1",

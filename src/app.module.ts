@@ -12,6 +12,7 @@ import { SaleModule } from './sale/sale.module';
 import { MainModule } from './main/main.module';
 import { ServicesModule } from './services/services.module';
 import configuration from './config/configuration';
+import { ExportModule } from './export/export.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import configuration from './config/configuration';
     SaleModule,
     MainModule,
     ServicesModule,
+    ExportModule,
   ],
   controllers: [AppController],
   providers: [AppService],
